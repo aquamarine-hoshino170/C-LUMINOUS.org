@@ -505,7 +505,7 @@ Contributions welcome! Areas for expansion:
 
 ## 📄 License
 
-MIT License © 2024 aquamarine-hoshino170
+MIT License © 2026 aquamarine-hoshino170
 
 ---
 
