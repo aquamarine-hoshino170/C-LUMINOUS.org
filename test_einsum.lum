@@ -1,0 +1,37 @@
+print("=== MULTIDIMENSIONAL TENSOR & EINSTEIN SUMMATION (einsum) ===");
+
+// 1. Initialize Tensor A (2x2 Matrix)
+let A = tensor2d(2, 2);
+tensor_set(A, 0, 0, 1.0);
+tensor_set(A, 0, 1, 2.0);
+tensor_set(A, 1, 0, 3.0);
+tensor_set(A, 1, 1, 4.0);
+
+// 2. Initialize Tensor B (2x2 Matrix)
+let B = tensor2d(2, 2);
+tensor_set(B, 0, 0, 2.0);
+tensor_set(B, 0, 1, 0.0);
+tensor_set(B, 1, 0, 1.0);
+tensor_set(B, 1, 1, 2.0);
+
+// 3. Einstein Contraction: C_ik = sum_j (A_ij * B_jk)
+// C = [[1*2 + 2*1, 1*0 + 2*2], [3*2 + 4*1, 3*0 + 4*2]] = [[4, 4], [10, 8]]
+let C = einsum("ij,jk->ik", A, B);
+
+print("Tensor Element C(0, 0) [Expected: 4.000000]:");
+let c00 = tensor_get(C, 0, 0);
+print(c00);
+
+print("Tensor Element C(1, 0) [Expected: 10.000000]:");
+let c10 = tensor_get(C, 1, 0);
+print(c10);
+
+print("Einstein Trace Invariant Tr(C) [Expected: 12.000000]:");
+let tr_c = einsum_trace(C);
+print(tr_c);
+
+// 4. Clean Memory
+free_tensor(A);
+free_tensor(B);
+free_tensor(C);
+print("Tensor Memory Cleaned.");

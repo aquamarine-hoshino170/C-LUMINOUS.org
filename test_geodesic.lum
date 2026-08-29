@@ -1,0 +1,24 @@
+print("=== GEODESIC 4-VECTOR INTEGRATION (Circular Orbit at r = 6M) ===");
+// Initial Condition: t=0, r=6.0, theta=pi/2 (1.5708), phi=0.0
+// Circular orbit velocity: u^t = (1 - 3M/r)^(-1/2) = (1 - 0.5)^(-1/2) = 1.41421356
+// u^phi = sqrt(M / r^3) * u^t = sqrt(1/216) * 1.41421356 = 0.09622504
+let s0 = geodesic_init(0.0, 6.0, 1.570796, 0.0, 1.41421356, 0.0, 0.0, 0.09622504);
+
+print("Initial Radial Coordinate (r0):");
+let r0 = geo_get_r(s0);
+print(r0);
+
+print("Timelike 4-Velocity Invariant (g_ab u^a u^b = -1.0):");
+let norm0 = geo_norm(s0, 1.0);
+print(norm0);
+
+// Integrate forward by proper time step dtau = 0.1
+let s1 = geodesic_step(s0, 1.0, 0.1);
+
+print("Radial Coordinate after Geodesic Step (r1):");
+let r1 = geo_get_r(s1);
+print(r1);
+
+print("Conserved Timelike Invariant after step:");
+let norm1 = geo_norm(s1, 1.0);
+print(norm1);

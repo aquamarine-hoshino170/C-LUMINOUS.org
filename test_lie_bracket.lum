@@ -1,0 +1,22 @@
+print("=== PURE LIE ALGEBRA so(3) COMMUTATION RELATION ===");
+
+// 1. Initialize Lie Algebra Generators
+let Jx = so3_generator_x();
+let Jy = so3_generator_y();
+let Jz = so3_generator_z();
+
+// 2. Compute Lie Bracket Commutator: [Jx, Jy] = Jx*Jy - Jy*Jx
+let comm_xy = lie_bracket(Jx, Jy);
+
+print("Commutator Element [Jx, Jy](0, 1) [Expected: -1.000000]:");
+let val01 = mat3_get(comm_xy, 0, 1);
+print(val01);
+
+print("Commutator Element [Jx, Jy](1, 0) [Expected: 1.000000]:");
+let val10 = mat3_get(comm_xy, 1, 0);
+print(val10);
+
+// 3. Exact Invariant Verification: Norm of ([Jx, Jy] - Jz) must be exactly 0.000000
+let deviation = lie_diff_norm(comm_xy, Jz);
+print("Lie Bracket Invariant Zero-Deviation Norm [Expected: 0.000000]:");
+print(deviation);

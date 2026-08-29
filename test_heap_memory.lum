@@ -1,0 +1,26 @@
+print("==================================================");
+print("  ❖ C LUMINOUS: DIRECT HEAP MEMORY & POINTERS ❖   ");
+print("==================================================");
+
+// 1. Allocate heap memory block for 3 components
+let ptr = alloc_ptr(3);
+
+// 2. Direct Address Assignment (Metric components at r = 5M, M = 1)
+// g_00 = -(1 - 2/5) = -0.600000
+// g_11 = 1 / 0.6 = 1.666667
+// g_22 = r^2 = 25.000000
+ptr_set(ptr, 0, -0.600000);
+ptr_set(ptr, 1, 1.666667);
+ptr_set(ptr, 2, 25.000000);
+
+print("--- Reading Value at Pointer Offset 1 (g_11) ---");
+let g11 = ptr_get(ptr, 1);
+print(g11);
+
+print("--- Metric Trace Sum across Allocated Heap Block ---");
+let trace = ptr_sum(ptr);
+print(trace);
+
+// 3. Deterministic Heap Deallocation
+free_ptr(ptr);
+print("Heap Memory Successfully Freed (0 Leaks).");

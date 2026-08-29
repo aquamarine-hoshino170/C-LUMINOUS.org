@@ -1,0 +1,26 @@
+print("==================================================");
+print("     ❖ C LUMINOUS PURE SYSTEMS LANGUAGE (v1.0) ❖    ");
+print("==================================================");
+
+// 1. Manifold Physics: Geodesic Motion under Curved Space
+let g0 = geodesic_init(0.0, 6.0, 1.570796, 0.0, 1.41421356, 0.0, 0.0, 0.09622504);
+let norm_t0 = geo_norm(g0, 1.0);
+print("Initial 4-Velocity Invariant (g_ab u^a u^b):");
+print(norm_t0);
+
+let g1 = geodesic_step(g0, 1.0, 0.05);
+let norm_t1 = geo_norm(g1, 1.0);
+print("Conserved 4-Velocity Invariant after Dynamics Step:");
+print(norm_t1);
+
+// 2. Symbolic Deduction: Automated Proof on Topology
+let kb = kb_init();
+kb_fact(kb, "compact_space");
+kb_fact(kb, "connected_space");
+
+kb_rule(kb, "continuum", "compact_space, connected_space");
+kb_rule(kb, "weierstrass_valid", "continuum");
+
+print("Theorem Verification: Does Continuum imply Weierstrass Extremum Theorem?");
+let proof_w = kb_prove(kb, "weierstrass_valid");
+print(proof_w);

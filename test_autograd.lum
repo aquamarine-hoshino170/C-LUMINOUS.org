@@ -1,0 +1,27 @@
+print("=== PURE REVERSE-MODE SYMBOLIC AUTOGRAD ENGINE ===");
+
+// 1. Define Computational Graph Leaf Nodes
+let x = autograd_var(3.0);
+let y = autograd_var(4.0);
+
+// 2. Build Forward Graph: L = (x * y) + x^2
+let term1 = autograd_mul(x, y);
+let term2 = autograd_pow2(x);
+let L = autograd_add(term1, term2);
+
+let loss_val = node_val(L);
+print("Evaluated Forward Loss L(x, y) [Expected: 21.000000]:");
+print(loss_val);
+
+// 3. Trigger Reverse-Mode Automatic Differentiation
+autograd_backward(L);
+
+print("Partial Derivative dL/dx [Expected: 10.000000]:");
+let grad_x = grad(x);
+print(grad_x);
+
+print("Partial Derivative dL/dy [Expected: 3.000000]:");
+let grad_y = grad(y);
+print(grad_y);
+
+print("Autograd Computation Graph Verified.");

@@ -1,0 +1,11 @@
+// C Luminous Standard Library: Differential Geometry & Manifolds
+fn christoffel_r_tt(M, r) {
+    let f = 1.0 - (2.0 * M / r);
+    return (M / (r * r)) * f;
+}
+
+fn effective_potential(M, L, r) {
+    let f = 1.0 - (2.0 * M / r);
+    let ang = 1.0 + ((L * L) / (r * r));
+    return f * ang;
+}

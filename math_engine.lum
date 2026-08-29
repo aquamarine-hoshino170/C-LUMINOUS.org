@@ -1,0 +1,29 @@
+// Pure Mathematical Functions in C Luminous
+fn factorial(n) {
+    if (n < 2.0) {
+        return 1.0;
+    }
+    return n * factorial(n - 1.0);
+}
+
+fn euler_series(terms) {
+    let sum = 1.0;
+    let i = 1.0;
+    while (i < terms) {
+        sum = sum + (1.0 / factorial(i));
+        i = i + 1.0;
+    }
+    return sum;
+}
+
+print("==================================================");
+print("     ❖ C LUMINOUS: PURE RECURSION & FUNCTION ❖    ");
+print("==================================================");
+
+// 1. Factorial Invariant: 6! = 720
+let fact6 = factorial(6.0);
+print(fact6);
+
+// 2. Numerical Convergence to Euler's Number (e = 2.7182818...)
+let approx_e = euler_series(10.0);
+print(approx_e);

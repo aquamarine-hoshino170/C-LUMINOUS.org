@@ -1,0 +1,56 @@
+// C Luminous Standard Library: Linear Algebra
+fn mat2_det(a, b, c, d) {
+    return (a * d) - (b * c);
+}
+
+fn mat2_trace(a, d) {
+    return a + d;
+}
+
+fn mat2_eigenval_plus(a, b, c, d) {
+    let tr = mat2_trace(a, d);
+    let det = mat2_det(a, b, c, d);
+    let disc = (tr * tr) - (4.0 * det);
+    return (tr + sqrt(disc)) / 2.0;
+}
+// C Luminous Standard Library: Differential Geometry & Manifolds
+fn christoffel_r_tt(M, r) {
+    let f = 1.0 - (2.0 * M / r);
+    return (M / (r * r)) * f;
+}
+
+fn effective_potential(M, L, r) {
+    let f = 1.0 - (2.0 * M / r);
+    let ang = 1.0 + ((L * L) / (r * r));
+    return f * ang;
+}
+
+print("==================================================");
+print("  ❖ C LUMINOUS: STANDARD LIBRARY (stdlib/) TEST ❖ ");
+print("==================================================");
+
+// 1. Matrix Invariants: A = [[4, 1], [2, 3]]
+// det(A) = 4*3 - 1*2 = 10.000000
+// tr(A) = 4 + 3 = 7.000000
+// lambda_+ = (7 + sqrt(49 - 40)) / 2 = (7 + 3) / 2 = 5.000000
+let det_val = mat2_det(4.0, 1.0, 2.0, 3.0);
+print("Matrix Determinant det(A) [Expected: 10.000000]:");
+print(det_val);
+
+let lambda_max = mat2_eigenval_plus(4.0, 1.0, 2.0, 3.0);
+print("Maximum Eigenvalue lambda_+ [Expected: 5.000000]:");
+print(lambda_max);
+
+// 2. Manifold Physics: M = 1.0, L = 4.0, r = 8.0
+// f = 1 - 2/8 = 0.75
+// ang = 1 + 16/64 = 1.25
+// V_eff = 0.75 * 1.25 = 0.937500
+let v_eff = effective_potential(1.0, 4.0, 8.0);
+print("Manifold Effective Potential V_eff [Expected: 0.937500]:");
+print(v_eff);
+
+// Christoffel Component Gamma^r_tt at r = 8M
+// Gamma^r_tt = (1 / 64) * 0.75 = 0.75 / 64 = 0.011719
+let gamma_rtt = christoffel_r_tt(1.0, 8.0);
+print("Christoffel Gamma^r_tt Invariant [Expected: 0.011719]:");
+print(gamma_rtt);

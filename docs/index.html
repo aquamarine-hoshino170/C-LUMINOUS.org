@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C Luminous — The Invariant Mathematical Systems Language</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --border: #30363d;
+            --accent: #58a6ff;
+            --accent-green: #3fb950;
+            --text: #c9d1d9;
+            --text-bright: #f0f6fc;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            text-align: center;
+            padding: 80px 20px 40px;
+            background: radial-gradient(circle at top, #1f242c 0%, var(--bg) 70%);
+        }
+        h1 {
+            font-size: 3rem;
+            color: var(--text-bright);
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--accent);
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        .install-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 16px 24px;
+            border-radius: 8px;
+            display: inline-block;
+            font-family: monospace;
+            font-size: 1rem;
+            color: var(--accent-green);
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 8px;
+        }
+        .card h3 {
+            color: var(--text-bright);
+            margin-top: 0;
+        }
+        pre {
+            background: #000;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            color: #79c0ff;
+            border: 1px solid var(--border);
+        }
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>❖ C Luminous</h1>
+    <p class="tagline">A High-Performance, Mathematical Systems Language with Native REPL & Symplectic Mechanics</p>
+    <div class="install-box">
+        curl -fsSL https://raw.githubusercontent.com/username/c-luminous/main/install.sh | bash
+    </div>
+</header>
+
+<div class="container">
+    <h2>Why C Luminous?</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>⚡ Pure Native Speed</h3>
+            <p>Runs directly as a standalone binary with deterministic memory allocation and zero runtime bloat.</p>
+        </div>
+        <div class="card">
+            <h3>📐 Mathematical Core</h3>
+            <p>First-class algebraic expressions, power operators (<code>^</code>), manifolds, and relativistic calculus.</p>
+        </div>
+        <div class="card">
+            <h3>💻 Interactive REPL</h3>
+            <p>Immediate code execution loop for rapid scientific modeling, numerical prototyping, and system tooling.</p>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 60px;">Quick Code Example</h2>
+    <pre><code># Schwarzschild Geodesic Invariant in C Luminous
+G = 6.67430e-11
+M = 1.989e30
+r = 100000.0
+
+# Escape Velocity
+v_esc = sqrt((2.0 * G * M) / r)
+print("Escape Velocity (m/s):")
+print(v_esc)</code></pre>
+</div>
+
+<footer>
+    <p>© 2026 C Luminous Language Project. Open source under the MIT License.</p>
+</footer>
+
+</body>
+</html>

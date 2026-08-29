@@ -1,0 +1,15 @@
+// C Luminous Standard Library: Linear Algebra
+fn mat2_det(a, b, c, d) {
+    return (a * d) - (b * c);
+}
+
+fn mat2_trace(a, d) {
+    return a + d;
+}
+
+fn mat2_eigenval_plus(a, b, c, d) {
+    let tr = mat2_trace(a, d);
+    let det = mat2_det(a, b, c, d);
+    let disc = (tr * tr) - (4.0 * det);
+    return (tr + sqrt(disc)) / 2.0;
+}

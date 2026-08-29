@@ -1,0 +1,27 @@
+// C Luminous Self-Hosted Core Kernel
+fn compute_lorentz_factor(v, c) {
+    let beta = (v * v) / (c * c);
+    let gamma_inv = 1.0 - beta;
+    return 1.0 / sqrt(gamma_inv);
+}
+
+fn quantum_hamiltonian(p, m, k, x) {
+    let kinetic = (p * p) / (2.0 * m);
+    let potential = 0.5 * k * (x * x);
+    return kinetic + potential;
+}
+
+print("==================================================");
+print("   ❖ C LUMINOUS: SELF-HOSTED RELATIVITY & QUANTUM ❖  ");
+print("==================================================");
+
+// 1. Relativistic Invariant: Velocity v = 0.6c -> gamma = 1.25
+let c = 300000.0;
+let v = 180000.0;
+let gamma = compute_lorentz_factor(v, c);
+print(gamma);
+
+// 2. Quantum Harmonic Oscillator Energy: p=2.0, m=1.0, k=2.0, x=3.0
+// H = (4 / 2) + 0.5 * 2 * 9 = 2 + 9 = 11.000000
+let H = quantum_hamiltonian(2.0, 1.0, 2.0, 3.0);
+print(H);
