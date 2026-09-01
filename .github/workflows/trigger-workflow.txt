@@ -1,0 +1,6 @@
+This commit was created to trigger the GitHub Actions workflow for Pages.
+
+Triggered by: GitHub Copilot Chat Assistant
+Timestamp: 2026-09-01T15:42:00Z
+
+If you want me to stop auto-triggering, tell me and I'll not push any more commits.
