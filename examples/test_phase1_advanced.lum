@@ -1,0 +1,22 @@
+tell me "=========================================="
+tell me "   LUMINOUS v2.0 - ADVANCED STRING TEST   "
+tell me "=========================================="
+
+today author is "Aquamarine"
+today version is 2
+today active is true
+
+# ১. Inline Concatenation Test (+)
+tell me "Engine: " + author + " | Version: " + version + " | Active: " + active
+
+# ২. String Interpolation Test (${var})
+tell me "System Info: Welcome to Luminous v${version} built by ${author}!"
+
+# ৩. Numeric Expression Test (+)
+today x is 25
+today y is 75
+today sum is x + y
+tell me "Calculated Sum: " + sum
+
+tell me "------------------------------------------"
+tell me "✓ Advanced String & Interpolation Tests Passed!"

@@ -1,0 +1,112 @@
+# ==================================================
+# ❖ LUMINOUS: LINEAR REGRESSION & MATRIX ENGINE ❖
+# ==================================================
+
+# ১. স্ট্যাটিস্টিক্যাল মেথডস (Mean & Variance)
+fn compute_mean(data_list) {
+    n = len(data_list)
+    if n == 0 {
+        return 0.0
+    }
+    sum_val = 0.0
+    idx = 0
+    while idx < n {
+        sum_val = sum_val + data_list[idx]
+        idx = idx + 1
+    }
+    return sum_val / n
+}
+
+fn compute_variance(data_list, mean_val) {
+    n = len(data_list)
+    if n == 0 {
+        return 0.0
+    }
+    sum_sq = 0.0
+    idx = 0
+    while idx < n {
+        diff = data_list[idx] - mean_val
+        sum_sq = sum_sq + (diff ^ 2)
+        idx = idx + 1
+    }
+    return sum_sq / n
+}
+
+# ২. ট্রেইনিং পাইপলাইন (Gradient Descent Engine)
+fn train_linear_regression(x_matrix, y_vector, learning_rate, epochs) {
+    weight = 0.5
+    bias = 0.1
+    sample_size = len(x_matrix)
+    
+    print("[*] Initializing Training Pipeline...")
+    
+    epoch = 0
+    while epoch < epochs {
+        total_loss = 0.0
+        dw = 0.0
+        db = 0.0
+        
+        i = 0
+        while i < sample_size {
+            x_val = x_matrix[i]
+            y_true = y_vector[i]
+            
+            # Forward Pass: y = wx + b
+            y_pred = (x_val * weight) + bias
+            
+            # Error & Loss (MSE)
+            error = y_pred - y_true
+            total_loss = total_loss + (error ^ 2)
+            
+            # Gradients
+            dw = dw + (error * x_val)
+            db = db + error
+            
+            i = i + 1
+        }
+        
+        # Update Weights and Bias
+        mse_loss = total_loss / sample_size
+        weight = weight - (learning_rate * (dw / sample_size))
+        bias = bias - (learning_rate * (db / sample_size))
+        
+        epoch = epoch + 1
+    }
+    
+    return {"optimized_weight": weight, "optimized_bias": bias}
+}
+
+# ৩. মক ডাটাসেট জেনারেশন (Input X, Target Y)
+inputs_x = [1.0, 2.0, 3.0, 4.0, 5.0]
+targets_y = [3.1, 4.9, 7.2, 8.8, 11.1]
+
+# ৪. ডাটা স্ট্যাটিস্টিকস অ্যানালাইসিস
+x_mean = compute_mean(inputs_x)
+x_var = compute_variance(inputs_x, x_mean)
+
+print("--- Dataset Statistical Diagnostics ---")
+print("Inputs Mean:")
+print(x_mean)
+print("Inputs Variance:")
+print(x_var)
+
+# ৫. মডেল ট্রেইনিং এক্সিকিউশন
+model_params = train_linear_regression(inputs_x, targets_y, 0.05, 200)
+
+print("--- Optimized Model Parameters ---")
+opt_w = model_params["optimized_weight"]
+opt_b = model_params["optimized_bias"]
+print("Weight:")
+print(opt_w)
+print("Bias:")
+print(opt_b)
+
+# ৬. ইনফ্যারেন্স ও প্রেডিকশন টেস্ট
+test_input = 6.0
+final_prediction = (test_input * opt_w) + opt_b
+
+print("--- Inference Engine Test ---")
+print("Input Data Point:")
+print(test_input)
+print("Model Prediction (Expected ~ 13.0):")
+print(final_prediction)

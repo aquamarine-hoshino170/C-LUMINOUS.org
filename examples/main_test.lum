@@ -1,0 +1,9 @@
+import "math_utils.lum"
+
+print("=== MODULE IMPORT & METHOD PIPELINE TEST ===")
+
+numbers = [1, 2, 3, 4, 5]
+
+# Imported module function + Chaining
+cubed_odds = numbers.filter(is_odd).map(cube)
+print("Cubed Odd Numbers: " + cubed_odds)

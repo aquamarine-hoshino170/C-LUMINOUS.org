@@ -1,0 +1,14 @@
+print("=== C Luminous Standalone Runtime ===")
+
+fn kinetic_energy(mass, velocity) {
+    v_sq = pow(velocity, 2)
+    return 0.5 * mass * v_sq
+}
+
+# Explicit Type Casting to float via parseFloat()
+m = parseFloat(input("Enter mass (kg): "))
+v = parseFloat(input("Enter velocity (m/s): "))
+
+ke = kinetic_energy(m, v)
+print("Kinetic Energy (J):")
+print(ke)

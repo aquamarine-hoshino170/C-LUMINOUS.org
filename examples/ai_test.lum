@@ -1,0 +1,28 @@
+# ==================================================
+# ❖ LUMINOUS: AI VALIDATION & LITERARY DIARY TEST ❖
+# ==================================================
+
+# --- ১. ডায়েরি মোড: আজকের স্টেটমেন্ট ---
+today system_energy is 95
+today error_rate is 2.5
+
+# --- ২. জুলিয়া-স্টাইল ওয়ান-লাইনার ফাংশন (3x + 5) ---
+fn performance_score(energy) = 3energy + 5
+
+# গাণিতিক হিসাব এক্সিকিউশন
+score = performance_score(system_energy)
+
+# --- ৩. কন্ডিশনাল ডায়েরি ফ্লো ও আউটপুট ---
+when system_energy is greater than 80 {
+    tell me "--- Luminous Engine Status ---"
+    tell me "System is running at Peak Performance!"
+    tell me "Calculated Score [3x + 5]:"
+    tell me score
+}
+
+# এরর রেট চেক
+when error_rate is greater than 5.0 {
+    tell me "Warning: Error rate is high!"
+} else {
+    tell me "Status: Engine Core is Stable."
+}

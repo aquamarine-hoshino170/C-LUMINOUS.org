@@ -1,0 +1,26 @@
+// ১. কাস্টম ফাংশন ডিক্লারেশন: ম্যানহাটন ও ইউক্লিডিয়ান ডিসট্যান্স
+fn compute_manifold_loss(v1, v2) {
+    let diff = v1 - v2;
+    let distance = diff.norm();
+    return distance;
+}
+
+// ২. ইন-মেমোরি ভেক্টর তৈরি
+let u = vec(3.0, 4.0, 0.0);
+let v = vec(0.0, 0.0, 5.0);
+
+print("Vector U:");
+print(u);
+
+print("Vector V:");
+print(v);
+
+// ৩. ভেক্টর ডট প্রোডাক্ট (u * v)
+let dot_prod = u * v;
+print("Vector Dot Product (u * v):");
+print(dot_prod);
+
+// ৪. কাস্টম ফাংশনে ভেক্টর পাস করে রেজাল্ট নির্ণয়
+let loss = compute_manifold_loss(u, v);
+print("Manifold Distance Loss:");
+print(loss);

@@ -1,0 +1,11 @@
+print("=== 🌐 Starting Luminous Application Server ===")
+
+fn handleRequest(path) {
+    if path == "/api/status" {
+        return jsonEncode(["status", "running", "engine", "Luminous v0.2.0"])
+    }
+    
+    return "<h1>🚀 Hello from Luminous HTTP Server!</h1><p>Active URL Path: ${path}</p>"
+}
+
+httpServe(8080, "handleRequest")

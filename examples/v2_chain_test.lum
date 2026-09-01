@@ -1,0 +1,14 @@
+print("=== METHOD CHAINING PIPELINE TEST ===")
+
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+sq = fn(x) { return x * x }
+is_even = fn(x) { return (x % 2) == 0 }
+add = fn(acc, x) { return acc + x }
+
+# Fluent Chaining: nums.map(...).filter(...)
+evens_squared = nums.map(sq).filter(is_even)
+print("Chained Map -> Filter: " + evens_squared)
+
+total = nums.filter(is_even).reduce(add, 0)
+print("Chained Filter -> Reduce: " + total)

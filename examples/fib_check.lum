@@ -1,0 +1,21 @@
+fn fast_fib(n) {
+    if n < 1 {
+        return 0
+    }
+    if n == 1 {
+        return 1
+    }
+    today a is 0
+    today b is 1
+    today i is 2
+    while i <= n {
+        today temp is a + b
+        a = b
+        b = temp
+        i = i + 1
+    }
+    return b
+}
+
+tell me "Fibonacci(20) Corrected Output (Expected 6765):"
+tell me fast_fib(20)

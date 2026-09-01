@@ -1,0 +1,30 @@
+print("==================================================")
+print("  🚀 Luminous REST API Server Engine v1.0.0       ")
+print("  ⭐ Special Persona: Aquamarine Hoshino Loaded   ")
+print("==================================================")
+
+fn handleRequest(path) {
+    if path == "/api/health" {
+        return jsonEncode(["status", "healthy", "engine", "Luminous VM", "uptime", "100%"])
+    }
+
+    if path == "/api/user" {
+        return jsonEncode(["name", "Soma Dutta", "role", "Lead Architect", "language", "Luminous"])
+    }
+
+    if path == "/api/aqua" {
+        return jsonEncode(["name", "Aquamarine Hoshino", "alias", "Aqua", "role", "Cold Analytical Strategist & Actor", "eye_star", "Right Eye (Star Active)", "quote", "In this world, talent and calculated strategy dictate the reality."])
+    }
+
+    if path == "/api/system" {
+        return jsonEncode(["version", "0.2.0", "type", "Stack VM", "features", "JSON, HTTP, Modules, CLI"])
+    }
+
+    if path == "/" {
+        return "<html><body style='font-family:sans-serif;padding:30px;background:#0d1117;color:#c9d1d9;'><h1>🌊 Welcome to Luminous API Server</h1><p>Active Persona: <b style='color:#58a6ff;'>Aquamarine Hoshino</b></p><ul><li><a style='color:#79c0ff;' href='/api/health'>/api/health</a></li><li><a style='color:#79c0ff;' href='/api/user'>/api/user</a></li><li><a style='color:#79c0ff;' href='/api/aqua'>/api/aqua (⭐ Aqua Endpoint)</a></li><li><a style='color:#79c0ff;' href='/api/system'>/api/system</a></li></ul></body></html>"
+    }
+
+    return jsonEncode(["error", "404 Not Found", "requested_path", path])
+}
+
+httpServe(8008, "handleRequest")

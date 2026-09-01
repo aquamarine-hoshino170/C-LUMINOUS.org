@@ -1,0 +1,37 @@
+print("==================================================")
+print(" ❖ 1. HIGH-LEVEL MODE (Python Style Programming) ❖")
+print("==================================================")
+dataset = [10, 20, 30, 40, 50]
+normalized = map(dataset, |x| => x / 10.0)
+print("Python-style Map result:")
+print(normalized)
+
+print("==================================================")
+print(" ❖ 2. LOW-LEVEL MODE (Rust/Assembly Raw Pointers) ❖")
+print("==================================================")
+# ৬৪ বাইটের একটি ডাইনামিক হিপ মেমরি ব্লক তৈরি (Like malloc in C / std::alloc in Rust)
+ptr = ptr_alloc(64)
+print("Allocated Raw Memory Address:")
+print(ptr)
+
+# সরাসরি র মেমরি অ্যাড্রেসে বাইট রাইট করা (Assembly MOV byte style)
+ptr_write_u8(ptr, 0, 72)   # ASCII 'H'
+ptr_write_u8(ptr, 1, 69)   # ASCII 'E'
+ptr_write_u8(ptr, 2, 88)   # ASCII 'X'
+
+# মেমরি অ্যাড্রেস থেকে রিড করা
+b0 = ptr_read_u8(ptr, 0)
+b1 = ptr_read_u8(ptr, 1)
+b2 = ptr_read_u8(ptr, 2)
+print("Direct Memory Bytes Read [Expected: 72, 69, 88]:")
+print([b0, b1, b2])
+
+# ডাবল-প্রিসিশন ফ্লোট সরাসরি মেমরিতে ইনজেক্ট ও রিড করা
+ptr_write_f64(ptr, 8, 3.1415926535)
+val_f64 = ptr_read_f64(ptr, 8)
+print("Direct 64-bit Float Memory Read [Expected: 3.141593]:")
+print(val_f64)
+
+# মেমরি আন-অ্যালোকেট / ফ্রি করা (Zero Memory Leak)
+ptr_free(ptr, 64)
+print("Raw Memory block 64 bytes successfully freed.")

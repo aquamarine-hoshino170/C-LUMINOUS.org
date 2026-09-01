@@ -1,0 +1,14 @@
+print("❖ RUNNING C LUMINOUS VIA GLOBAL CLI TOOLCHAIN ❖");
+
+// Dynamic pointer memory test
+let p = alloc_ptr(3);
+ptr_set(p, 0, 10.5);
+ptr_set(p, 1, 20.25);
+ptr_set(p, 2, 30.75);
+
+let total = ptr_sum(p);
+print("Sum of Pointer Array:");
+print(total);
+
+free_ptr(p);
+print("Memory Cleaned.");

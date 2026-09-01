@@ -1,0 +1,21 @@
+print("=== 1. TYPE IDENTIFICATION (typeof) ===")
+today num is 42
+today text is "Luminous"
+today arr is [1, 2, 3]
+
+print("typeof(num)  = ${typeof(num)}")
+print("typeof(text) = ${typeof(text)}")
+print("typeof(arr)  = ${typeof(arr)}")
+
+print("=== 2. TYPE CHECKING (isNumber, isString, isArray) ===")
+print("isNumber(42): ${isNumber(num)}")
+print("isString(42): ${isString(num)}")
+print("isArray(arr): ${isArray(arr)}")
+
+print("=== 3. TYPE CASTING & CONVERSION ===")
+str_num = "150"
+parsed = parseInt(str_num) + 50
+print("parseInt('150') + 50 = ${parsed}")
+
+converted_str = toString(999) + "_level"
+print("toString(999) + '_level' = ${converted_str}")

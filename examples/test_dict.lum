@@ -1,0 +1,24 @@
+print("==================================================")
+print("     ❖ C LUMINOUS: HASH-MAP / DICT TEST ❖         ")
+print("==================================================")
+
+# ১. কী-ভ্যালু ডিকশনারি তৈরি
+particle = {"name": "Proton", "charge": 1.0, "spin": 0.5}
+print("Initial Dictionary Object:")
+print(particle)
+
+# ২. ডিকশনারি থেকে ডেটা অ্যাক্সেস
+print("Particle Name [Expected: Proton]:")
+print(particle["name"])
+
+print("Particle Charge [Expected: 1]:")
+print(particle["charge"])
+
+# ৩. নতুন কী যোগ করা ও আগের মান পরিবর্তন
+particle["mass_mev"] = 938.272
+particle["charge"] = 1.000000
+
+print("Updated Dictionary:")
+print(particle)
+print("Dictionary Size (Total Keys) [Expected: 4]:")
+print(len(particle))

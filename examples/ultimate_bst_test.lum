@@ -1,0 +1,32 @@
+print("==================================================")
+print("  ❖ LUMINOUS: BST NODE CHECKER TEST ❖            ")
+print("==================================================")
+
+fn insert_tree(root, val) {
+    if root == nil { 
+        return {"val": val, "left": nil, "right": nil} 
+    }
+    if val < root["val"] { 
+        root["left"] = insert_tree(root["left"], val) 
+    } else { 
+        root["right"] = insert_tree(root["right"], val) 
+    }
+    return root
+}
+
+today tree is nil
+today values is [50, 30, 70]
+today i is 0
+while i < len(values) {
+    tree = insert_tree(tree, values[i])
+    i = i + 1
+}
+
+tell me "BST Root Value (Expected 50):"
+tell me tree["val"]
+tell me "BST Left Child (Expected 30):"
+tell me tree["left"]["val"]
+tell me "BST Right Child (Expected 70):"
+tell me tree["right"]["val"]
+
+print("\n[✓] BST NODE CHECK COMPLETED.")

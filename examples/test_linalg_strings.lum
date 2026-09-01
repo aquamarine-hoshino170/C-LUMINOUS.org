@@ -1,0 +1,39 @@
+import "stdlib/linalg.lum"
+
+print("==================================================")
+print("  ❖ C LUMINOUS: STRINGS & LINALG ENGINE TEST ❖   ")
+print("==================================================")
+
+# --- ১. স্ট্রিং মেথডস টেস্ট (পাইথনের মতো সহজ ও পাওয়ারফুল) ---
+raw_data = "  Alpha, Beta, Gamma, Delta  "
+trimmed = trim(raw_data)
+print("Trimmed text:")
+print(trimmed)
+
+tokens = split(trimmed, ", ")
+print("Split tokens into array:")
+print(tokens)
+
+joined = join(tokens, " -> ")
+print("Joined tokens:")
+print(joined)
+
+replaced = replace(joined, "Gamma", "Omega")
+print("Replaced string [Expected: Gamma -> Omega]:")
+print(replaced)
+
+# --- ২. পিউর লিনিয়ার অ্যালজেব্রা টেস্ট ---
+# Determinant of [[4, 7], [2, 6]] => 4*6 - 7*2 = 24 - 14 = 10
+d = mat2_det(4.0, 7.0, 2.0, 6.0)
+print("2x2 Determinant [Expected: 10]:")
+print(d)
+
+# 2x2 Inverse of [[4, 7], [2, 6]] => det=10 => [0.6, -0.7, -0.2, 0.4]
+inv_mat = mat2_inv(4.0, 7.0, 2.0, 6.0)
+print("2x2 Inverse Matrix [Expected: [0.6, -0.7, -0.2, 0.4]]:")
+print(inv_mat)
+
+# 3D Cross Product: (1, 0, 0) x (0, 1, 0) = (0, 0, 1)
+cross = vec3_cross(1.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+print("Vector Cross Product [Expected: [0, 0, 1]]:")
+print(cross)

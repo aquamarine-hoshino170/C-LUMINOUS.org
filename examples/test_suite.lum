@@ -1,0 +1,42 @@
+import "stdlib/scimath.lum"
+
+print("==================================================")
+print("  ❖ C LUMINOUS: FULL THREE-PHASE VERIFICATION ❖   ")
+print("==================================================")
+
+# ১. ফেজ ১ টেস্ট: লজিক্যাল ও বুলিয়ান অপারেটর
+x = 10.0
+y = 20.0
+is_valid = (x < y) and not (x == y)
+print("Phase 1: Boolean Logic Evaluation [Expected: 1]:")
+print(is_valid)
+
+if (x > 5.0 and y > 15.0) or false {
+    print("Phase 1: Logic Branching -> Passed")
+}
+
+# ২. ফেজ ২ টেস্ট: টাইপ কনভার্সন
+str_num = "42.5"
+converted = to_num(str_num) + 7.5
+print("Phase 2: String to Number Conversion [Expected: 50]:")
+print(converted)
+
+num_str = to_str(100.0)
+print("Phase 2: Number to String Conversion [Expected: 100]:")
+print(num_str)
+
+# ৩. ফেজ ৩ টেস্ট: সায়েন্টিফিক ক্যালকুলাস লাইব্রেরি
+# Quadratic derivative at x = 3.0 (f'(3) = 2*3 = 6.0)
+derivative = diff_quad(3.0, 0.0001)
+print("Phase 3: Calculus Derivative of x^2 at x=3 [Expected: 6]:")
+print(derivative)
+
+# Vector Norm of (3, 4, 12) => sqrt(9 + 16 + 144) = sqrt(169) = 13.0
+norm = vec3_norm(3.0, 4.0, 12.0)
+print("Phase 3: 3D Vector Euclidean Norm [Expected: 13]:")
+print(norm)
+
+# Vector Dot Product: (1, 2, 3) . (4, 5, 6) = 4 + 10 + 18 = 32.0
+dot = vec3_dot(1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
+print("Phase 3: Vector 3D Dot Product [Expected: 32]:")
+print(dot)

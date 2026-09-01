@@ -1,0 +1,34 @@
+print("=== 1. STRING UTILITY FUNCTIONS ===")
+text = "  Hello Luminous World  "
+trimmed = trim(text)
+print("Trimmed: '${trimmed}'")
+print("Length: ${strlen(trimmed)}")
+print("Uppercase: ${toUpperCase(trimmed)}")
+print("Substring: ${substr(trimmed, 6, 8)}")
+print("Replaced: ${replace(trimmed, 'World', 'Universe')}")
+
+words = split(trimmed, " ")
+print("Split to array: ${words}")
+joined = join(words, " -> ")
+print("Joined back: ${joined}")
+
+print("=== 2. LIST/ARRAY UTILITY FUNCTIONS ===")
+nums = [10, 20, 30]
+print("Original: ${nums}")
+print("Length: ${len(nums)}")
+
+nums = push(nums, 40)
+print("After push: ${nums}")
+
+nums = pop(nums)
+print("After pop: ${nums}")
+
+print("IndexOf 20: ${indexOf(nums, 20)}")
+print("Includes 30: ${includes(nums, 30)}")
+print("Includes 99: ${includes(nums, 99)}")
+
+sliced = slice(nums, 1, 3)
+print("Slice [1..3]: ${sliced}")
+
+rev = reverse(nums)
+print("Reversed: ${rev}")

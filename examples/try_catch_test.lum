@@ -1,0 +1,28 @@
+struct SafeMath {
+    fn divide(a, b) {
+        if b == 0 {
+            throw "MathError: Division by zero!"
+        }
+        return a / b
+    }
+}
+
+calc = SafeMath()
+
+print("=== 1. NORMAL EXECUTION ===")
+try {
+    ans1 = calc.divide(100, 5)
+    print("Result: ${ans1}")
+} catch (err) {
+    print("Caught Error: ${err}")
+}
+
+print("=== 2. EXCEPTION TRIGGERED & RECOVERED ===")
+try {
+    ans2 = calc.divide(50, 0)
+    print("This will not print: ${ans2}")
+} catch (e) {
+    print("Successfully Caught: [${e}]")
+}
+
+print("=== 3. PIPELINE CONTINUES SAFELY ===")

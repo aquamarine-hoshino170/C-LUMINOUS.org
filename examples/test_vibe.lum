@@ -1,0 +1,13 @@
+# ১. টাইপ-লেস ফ্রিডম ও ন্যাচারাল ম্যাথ
+w1 = 0.5
+w2 = 0.8
+bias = -0.2
+
+# ন্যাচারাল ল্যাম্বডা
+square = |x| => x * x
+print square(9.0)
+
+# ২. ইনবিল্ট জিরো-সেটআপ ভাইব প্রেডিকশন (Single File Execution)
+prediction = vibe_predict(1.0, 1.0, bias)
+print "AI Vibe Prediction Score [Target ~1.0]:"
+print prediction

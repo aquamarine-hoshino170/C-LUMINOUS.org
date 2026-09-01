@@ -1,0 +1,27 @@
+print("=== 1. SWITCH STATEMENT: MATCH SUCCESS ===")
+status = "success"
+switch status {
+    case "success" {
+        print("Status is: Operation successful!")
+    }
+    case "error" {
+        print("Status is: Error occurred!")
+    }
+    default {
+        print("Status is: Unknown status")
+    }
+}
+
+print("=== 2. SWITCH STATEMENT: DEFAULT TRIGGER ===")
+code = 404
+switch code {
+    case 200 {
+        print("Code 200: OK")
+    }
+    case 500 {
+        print("Code 500: Server Error")
+    }
+    default {
+        print("Code ${code}: Fallback/Unhandled Code")
+    }
+}

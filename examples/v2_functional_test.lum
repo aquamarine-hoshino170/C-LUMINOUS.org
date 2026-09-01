@@ -1,0 +1,25 @@
+print("=== FUNCTIONAL PROGRAMMING ENGINE ===")
+
+nums = [1, 2, 3, 4, 5, 6]
+print("Original List: " + nums)
+
+# 1. Map: Square each number
+sq = fn(x) {
+    return x * x
+}
+squared = map(nums, sq)
+print("Squared List: " + squared)
+
+# 2. Filter: Keep even numbers
+is_even = fn(x) {
+    return (x % 2) == 0
+}
+evens = filter(nums, is_even)
+print("Even Numbers: " + evens)
+
+# 3. Reduce: Sum of all numbers
+add_two = fn(acc, x) {
+    return acc + x
+}
+sum = reduce(nums, add_two, 0)
+print("Sum via Reduce: " + sum)

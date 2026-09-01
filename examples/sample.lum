@@ -1,0 +1,56 @@
+# ==========================================
+#  ❖ LUMINOUS SCIENTIFIC SCRIPT SAMPLE ❖
+# ==========================================
+
+# ১. ভেরিয়েবল এবং বেসিক ম্যাথ
+base = 12.5
+height = 8.0
+area = 0.5 * base * height
+print("--- Geometric Calculation ---")
+print("Triangle Area:")
+print(area)
+
+# ২. লজিক্যাল অপারেটর ও ব্রাঞ্চিং
+threshold = 40.0
+if (area > threshold) and true {
+    print("Area exceeds threshold limit.")
+}
+
+# ৩. স্ট্রিং প্রসেসিং মেথডস
+raw_text = "  Luminous, Python, Rust, C  "
+clean_text = trim(raw_text)
+langs = split(clean_text, ", ")
+print("Languages List:")
+print(langs)
+
+# ৪. ল্যাম্বডা এবং হায়ার-অর্ডার ফাংশন (map)
+numbers = [1, 2, 3, 4, 5]
+squares = map(numbers, |x| => x ^ 2)
+print("Squared Numbers:")
+print(squares)
+
+# ৫. ডাইনামিক অ্যারে মেথড ও স্লাইসিং
+numbers.append(6)
+numbers.insert(0, 0)
+print("Updated Numbers List:")
+print(numbers)
+
+sub_slice = numbers[1:4]
+print("Sliced Array (index 1 to 3):")
+print(sub_slice)
+
+# ৬. ডিকশনারি / হ্যাশম্যাপ
+system_info = {
+    "name": "Luminous",
+    "paradigm": "Scientific Interpreted",
+    "backend": "Rust"
+}
+print("System Architecture:")
+print(system_info)
+
+# ৭. ফাইল আই/ও (File I/O)
+log_msg = "Run completed successfully at threshold " + to_str(threshold)
+write_file("run_log.txt", log_msg)
+saved_data = read_file("run_log.txt")
+print("Log Output:")
+print(saved_data)

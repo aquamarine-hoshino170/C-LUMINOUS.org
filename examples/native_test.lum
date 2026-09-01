@@ -1,0 +1,5 @@
+let u = vec(3.0, 4.0, 0.0);
+let v = vec(0.0, 0.0, 5.0);
+print("--- Native C Luminous Binary Execution ---");
+let distance = (3.0*3.0 + 4.0*4.0 + 5.0*5.0)^0.5;
+print(distance);

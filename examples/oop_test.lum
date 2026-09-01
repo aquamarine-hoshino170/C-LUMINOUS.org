@@ -1,0 +1,23 @@
+struct Player {
+    fn init(name, score) {
+        this.name = name
+        this.score = score
+    }
+
+    fn add_score(pts) {
+        this.score = this.score + pts
+        return this.score
+    }
+
+    fn info() {
+        return "Player: " + this.name + " | Score: " + this.score
+    }
+}
+
+p1 = Player("Soma", 100)
+print("=== OOP INSTANTIATION ===")
+print(p1.info())
+
+p1.add_score(50)
+print("=== AFTER SCORE UPDATE ===")
+print(p1.info())

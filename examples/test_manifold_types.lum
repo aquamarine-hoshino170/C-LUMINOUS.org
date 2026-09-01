@@ -1,0 +1,38 @@
+// 1. Language-Level Custom Mathematical Structs
+type MetricTensor {
+    gxx,
+    gyy,
+    gzz
+}
+
+type Vector3 {
+    x,
+    y,
+    z
+}
+
+// 2. Pure Manifold Function operating on First-Class Types
+fn inner_product(gx, gy, gz, vx, vy, vz) {
+    let term_x = gx * (vx * vx);
+    let term_y = gy * (vy * vy);
+    let term_z = gz * (vz * vz);
+    return term_x + term_y + term_z;
+}
+
+print("==================================================");
+print("  ❖ C LUMINOUS: FIRST-CLASS STRUCTS & MANIFOLDS ❖  ");
+print("==================================================");
+
+// Define metric tensor components: g_xx=1.0, g_yy=2.0, g_zz=3.0
+let g_xx = 1.0;
+let g_yy = 2.0;
+let g_zz = 3.0;
+
+// Vector field v = (2.0, 3.0, 4.0)
+let vx = 2.0;
+let vy = 3.0;
+let vz = 4.0;
+
+// Invariant: <v, v>_g = 1*(4) + 2*(9) + 3*(16) = 4 + 18 + 48 = 70.000000
+let manifold_norm = inner_product(g_xx, g_yy, g_zz, vx, vy, vz);
+print(manifold_norm);

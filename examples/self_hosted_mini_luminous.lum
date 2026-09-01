@@ -1,0 +1,38 @@
+tell me "=================================================="
+tell me "  ❖ LUMINOUS: SELF-HOSTED INTERPRETER DEMO ❖      "
+tell me "=================================================="
+
+# ১. মিনি এনভায়রনমেন্ট তৈরি
+fn create_env() {
+    return {"x": 0, "y": 0}
+}
+
+# ২. অ্যাসাইনমেন্ট ইভালুয়েটর
+fn mini_set(env, var_name, val) {
+    env[var_name] = val
+    return env
+}
+
+# ৩. এক্সপ্রেশন ইভালুয়েটর (Luminous within Luminous)
+fn mini_eval_add(env, v1_name, v2_name) {
+    today val1 is env[v1_name]
+    today val2 is env[v2_name]
+    return val1 + val2
+}
+
+# ৪. ইন্টারপ্রেটার ড্রাইভার
+today my_env is create_env()
+
+tell me "[Mini-Luminous] Setting Variable: x = 25"
+my_env = mini_set(my_env, "x", 25)
+
+tell me "[Mini-Luminous] Setting Variable: y = 75"
+my_env = mini_set(my_env, "y", 75)
+
+tell me "[Mini-Luminous] Evaluating: eval_add(x, y)"
+today result is mini_eval_add(my_env, "x", "y")
+
+tell me "Mini-Luminous Computed Output (Expected 100):"
+tell me result
+
+tell me "[✓] SELF-HOSTING PROOF-OF-CONCEPT COMPLETE!"

@@ -1,0 +1,19 @@
+# ==========================================               # ❖ LUMINOUS DUAL MODE TEST (DIARY + MATH) ❖
+# ==========================================
+
+# --- MODE 1: DIARY MODE (Natural Flow) ---
+today my_target is 100
+today completed is 85
+
+when completed is greater than 80 {
+    tell me "Great progress today! Target almost reached."
+}
+
+# --- MODE 2: SHORT MATH MODE (Fast Math & Julia DNA) ---
+fn loss(w, x, b) = 2w * x + b
+                                                           w = 0.5
+x = 10.0                                                   b = 2.0
+
+res = loss(w, x, b)
+print "Calculated Loss Result:"
+print res

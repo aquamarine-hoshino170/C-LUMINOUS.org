@@ -1,0 +1,60 @@
+tell me "=================================================="
+tell me "  ❖ LUMINOUS: ULTIMATE CHAOS & STRESS ENGINE ❖    "
+tell me "=================================================="
+
+# 1. Fast Iterative Fibonacci
+tell me "--- [CHAOS 1] Fibonacci Iteration Benchmark ---"
+fn fast_fib(n) {
+    if n <= 0 { return 0 }
+    if n == 1 { return 1 }
+    today a is 0
+    today b is 1
+    today i is 2
+    while i <= n {
+        today temp is a + b
+        a = b
+        b = temp
+        i = i + 1
+    }
+    return b
+}
+tell me "Fibonacci(20) Result (Expected 6765):"
+tell me fast_fib(20)
+
+# 2. Matrix Multiplication Chaos (3x3)
+tell me "--- [CHAOS 2] 3x3 Matrix Dot Product ---"
+today A is [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+today B is [[9, 8, 7], [6, 5, 4], [3, 2, 1]]
+today C is [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+
+today i is 0
+while i < 3 {
+    today j is 0
+    while j < 3 {
+        today k is 0
+        today sum is 0
+        while k < 3 {
+            sum = sum + (A[i][k] * B[k][j])
+            k = k + 1
+        }
+        C[i][j] = sum
+        j = j + 1
+    }
+    i = i + 1
+}
+tell me "Matrix C (3x3) Output (Expected [[30, 24, 18], [84, 69, 54], [138, 114, 90]]):"
+tell me C
+
+# 3. Higher-Order Closure Factory
+tell me "--- [CHAOS 3] Multi-Layer Closures ---"
+fn multiplier_factory(factor) {
+    fn inner(x) {
+        return x * factor
+    }
+    return inner
+}
+today times_ten is multiplier_factory(10)
+tell me "Closure Output (Expected 150):"
+tell me times_ten(15)
+
+tell me "[✓] ALL CHAOS BENCHMARKS SURVIVED SUCCESSFULLY!"

@@ -1,0 +1,16 @@
+print("==================================================")
+print("     ❖ LUMINOUS: CLOSURE & LEXICAL SCOPE ❖       ")
+print("==================================================")
+
+fn make_counter(start) {
+    fn inner(step) {
+        return start + step
+    }
+    return inner
+}
+
+today add_five is make_counter(5)
+today result is add_five(10)
+
+tell me "Closure Execution Output (Expected: 15):"
+tell me result

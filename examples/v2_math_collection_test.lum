@@ -1,0 +1,18 @@
+print("=== MATH METHODS ===")
+print("abs(-42): " + abs(-42))
+print("min(15, 8): " + min(15, 8))
+print("max(15, 8): " + max(15, 8))
+print("floor(3.89): " + floor(3.89))
+print("ceil(3.12): " + ceil(3.12))
+
+print("\n=== COLLECTION METHODS ===")
+items = [1, 2, 3]
+items = append(items, 4)
+print("Appended List: " + items)
+print("Contains 3 in list: " + contains(items, 3))
+print("Contains 9 in list: " + contains(items, 9))
+
+msg = "Luminous Language"
+print("Contains 'min' in msg (Expected true): " + contains(msg, "min"))
+print("Contains 'Lang' in msg (Expected true): " + contains(msg, "Lang"))
+print("Contains 'Rust' in msg (Expected false): " + contains(msg, "Rust"))

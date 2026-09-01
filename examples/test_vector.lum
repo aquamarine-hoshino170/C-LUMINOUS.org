@@ -1,0 +1,31 @@
+print("==================================================");
+print("  ❖ C LUMINOUS: DYNAMIC VECTOR (Vec<T>) ENGINE ❖  ");
+print("==================================================");
+
+// 1. Initialize empty Dynamic Vector
+let v = new_vec();
+
+// 2. Dynamically push Fibonacci Invariants across geometric growth
+vec_push(v, 1.0);
+vec_push(v, 1.0);
+vec_push(v, 2.0);
+vec_push(v, 3.0);
+vec_push(v, 5.0);
+vec_push(v, 8.0);
+vec_push(v, 13.0);
+
+print("--- Dynamic Vector Length (Expected: 7) ---");
+let length = vec_len(v);
+print(length);
+
+print("--- Accessing Element at Index 5 (Expected: 8.000000) ---");
+let val5 = vec_get(v, 5);
+print(val5);
+
+print("--- Total Sum of Dynamic Elements (Expected: 33.000000) ---");
+let sum = vec_sum(v);
+print(sum);
+
+// 3. Clean Memory
+free_vec(v);
+print("Dynamic Vector Memory Safely Deallocated.");

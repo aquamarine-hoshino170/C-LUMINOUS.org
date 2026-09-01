@@ -1,0 +1,19 @@
+struct Character {
+    fn init(name, role, level) {
+        this.name = name
+        this.role = role
+        this.level = level
+    }
+
+    fn info() {
+        return "Character: ${this.name} | Role: ${this.role} | Level: ${this.level + 5}"
+    }
+}
+
+hero = Character("Soma", "Architect", 10)
+print("=== STRING INTERPOLATION & OOP TEST ===")
+print(hero.info())
+
+val_a = 40
+val_b = 60
+print("Math inside string: 40 + 60 = ${val_a + val_b}")

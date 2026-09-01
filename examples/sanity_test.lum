@@ -1,0 +1,4 @@
+today x is 10
+today y is 20
+tell me "Sanity Test Result (Expected 30):"
+tell me x + y

@@ -1,0 +1,28 @@
+print("==================================================")
+print("  ❖ LUMINOUS: MATHEMATICAL BOUNDARY & SAFETY ❖   ")
+print("==================================================")
+
+print("\n--- TEST 1: Division by Zero ---")
+today numerator is 100.0
+today denominator is 0.0
+today safe_div is numerator / denominator
+tell me "Safe Division Result:"
+tell me safe_div
+
+print("\n--- TEST 2: Boolean Short-Circuit ---")
+fn fail_func() {
+    return true
+}
+today short_circuit is false and fail_func()
+tell me "Short-circuit result (Expected false):"
+tell me short_circuit
+
+print("\n--- TEST 3: Deep Iterative Burnout (10,000 Loops) ---")
+today counter is 0
+while counter < 10000 {
+    counter = counter + 1
+}
+tell me "Burnout loop finished at count:"
+tell me counter
+
+print("\n[✓] ALL BOUNDARY & SAFETY TESTS COMPLETED.")

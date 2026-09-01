@@ -1,0 +1,6 @@
+today a is 100
+today b is 0
+
+print("Calculating...")
+result = a / b
+print("Result: ${result}")

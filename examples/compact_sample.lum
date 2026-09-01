@@ -1,0 +1,32 @@
+# 1. Math & Condition
+base = 12.5
+height = 8.0
+area = 0.5 * base * height
+print("--- Geometric Calculation ---")
+print("Triangle Area:")
+print(area)
+threshold = 40.0
+if (area > threshold) and true {
+    print("Area exceeds threshold limit.")
+}
+# 2. String & List Pipeline
+raw_text = "  Luminous, Python, Rust, C  "
+langs = split(trim(raw_text), ", ")
+print("Languages List:")
+print(langs)
+numbers = [1, 2, 3, 4, 5]
+print("Squared Numbers:")
+print(map(numbers, |x| => x ^ 2))
+numbers.append(6)
+numbers.insert(0, 0)
+print("Updated Numbers List:")
+print(numbers)
+print("Sliced Array (index 1 to 3):")
+print(numbers[1:4])
+# 3. Dict & File I/O
+system_info = {"name": "Luminous", "paradigm": "Scientific Interpreted", "backend": "Rust"}
+print("System Architecture:")
+print(system_info)
+write_file("run_log.txt", "Run completed successfully at threshold " + to_str(threshold))
+print("Log Output:")
+print(read_file("run_log.txt"))

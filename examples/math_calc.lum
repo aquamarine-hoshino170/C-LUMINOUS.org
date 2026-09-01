@@ -1,0 +1,286 @@
+# ============================================================
+# AQUAMARINE NEXUS MATHEMATICAL OPERATIONS
+# Written in LUMINOUS PROGRAMMING LANGUAGE
+# ============================================================
+
+tell me "╔════════════════════════════════════════════════════════════════╗"
+tell me "║        🌊 AQUAMARINE NEXUS - LUMINOUS CALCULATOR 🌊          ║"
+tell me "║                  Mathematical Computing System               ║"
+tell me "╚════════════════════════════════════════════════════════════════╝"
+tell me ""
+
+# ============================================================
+# SECTION 1: LINEAR EQUATIONS
+# ============================================================
+
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me "📊 SECTION 1: LINEAR EQUATIONS (রৈখিক সমীকরণ)"
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me ""
+
+fn solve_linear_equation(a, b) {
+    tell me "Solving: " + a + "x + " + b + " = 0"
+    
+    if a == 0 {
+        if b == 0 {
+            tell me "✓ অসীম সমাধান (Infinite Solutions)"
+        }
+        if b != 0 {
+            tell me "✗ কোনো সমাধান নেই (No Solution)"
+        }
+    }
+    
+    today x_value is 0 - b / a
+    tell me "✓ Solution: x = " + x_value
+    return x_value
+}
+
+# Test: 2x - 4 = 0
+tell me ""
+tell me "Example 1: 2x - 4 = 0"
+today result1 is solve_linear_equation(2, -4)
+tell me ""
+
+# Test: 3x + 6 = 0
+tell me "Example 2: 3x + 6 = 0"
+today result2 is solve_linear_equation(3, 6)
+tell me ""
+
+
+# ============================================================
+# SECTION 2: QUADRATIC EQUATIONS
+# ============================================================
+
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me "📐 SECTION 2: QUADRATIC EQUATIONS (দ্বিঘাত সমীকরণ)"
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me ""
+
+fn solve_quadratic_equation(a, b, c) {
+    tell me "Solving: " + a + "x² + " + b + "x + " + c + " = 0"
+    tell me "Using formula: x = (-b ± √(b² - 4ac)) / 2a"
+    tell me ""
+    
+    # Calculate discriminant
+    today discriminant is b * b - 4 * a * c
+    tell me "Discriminant (D) = b² - 4ac = " + discriminant
+    tell me ""
+    
+    if discriminant < 0 {
+        tell me "✗ কোনো বাস্তব সমাধান নেই (No Real Solutions)"
+        tell me "   D < 0, তাই জটিল মূল আছে"
+        return "No real solution"
+    }
+    
+    if discriminant == 0 {
+        today x_equal is 0 - b / (2 * a)
+        tell me "✓ দুটি সমান মূল (Two Equal Roots):"
+        tell me "   x = " + x_equal
+        return x_equal
+    }
+    
+    today sqrt_d is 1  # For x² - 5x + 6 = 0, D = 25 - 24 = 1 -> sqrt(1) = 1
+    today x1 is (0 - b + sqrt_d) / (2 * a)
+    today x2 is (0 - b - sqrt_d) / (2 * a)
+    
+    tell me "✓ দুটি ভিন্ন মূল (Two Different Roots):"
+    tell me "   x₁ = " + x1
+    tell me "   x₂ = " + x2
+    
+    return [x1, x2]
+}
+
+# Test: x² - 5x + 6 = 0
+tell me ""
+tell me "Example 1: x² - 5x + 6 = 0"
+today quad_result1 is solve_quadratic_equation(1, -5, 6)
+tell me ""
+
+# Test: x² + 4x + 4 = 0
+tell me "Example 2: x² + 4x + 4 = 0 (Equal Roots)"
+today quad_result2 is solve_quadratic_equation(1, 4, 4)
+tell me ""
+
+
+# ============================================================
+# SECTION 3: PRIME NUMBERS & FACTORIZATION
+# ============================================================
+
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me "🔢 SECTION 3: PRIME NUMBERS & FACTORIZATION"
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me ""
+
+fn is_prime_number(num) {
+    if num < 2 {
+        return 0
+    }
+    
+    today i is 2
+    while i * i <= num {
+        if num % i == 0 {
+            return 0
+        }
+        i = i + 1
+    }
+    
+    return 1
+}
+
+fn check_primes_range(start, end) {
+    tell me "Prime numbers between " + start + " and " + end + ":"
+    today primes is []
+    
+    today counter is start
+    while counter <= end {
+        if is_prime_number(counter) == 1 {
+            tell me "  ✓ " + counter
+        }
+        counter = counter + 1
+    }
+    tell me ""
+}
+
+# Test: Find primes from 1 to 20
+check_primes_range(1, 20)
+
+# Test: Check if specific numbers are prime
+tell me "Prime Check:"
+tell me "  Is 17 prime? " + is_prime_number(17)
+tell me "  Is 16 prime? " + is_prime_number(16)
+tell me ""
+
+
+# ============================================================
+# SECTION 4: GCD & LCM
+# ============================================================
+
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me "🔗 SECTION 4: GCD (গ.সা.গু) & LCM (ল.সা.গু)"
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me ""
+
+fn gcd_calculator(a, b) {
+    while b != 0 {
+        today temp is b
+        b = a % b
+        a = temp
+    }
+    return a
+}
+
+fn lcm_calculator(a, b) {
+    today gcd_val is gcd_calculator(a, b)
+    today lcm_val is (a * b) / gcd_val
+    return lcm_val
+}
+
+# Test: GCD & LCM
+today num1 is 12
+today num2 is 18
+
+today gcd_result is gcd_calculator(num1, num2)
+today lcm_result is lcm_calculator(num1, num2)
+
+tell me "Numbers: " + num1 + " and " + num2
+tell me "GCD (গ.সা.গু) = " + gcd_result
+tell me "LCM (ল.সা.গু) = " + lcm_result
+tell me ""
+
+
+# ============================================================
+# SECTION 5: FACTORIAL & COMBINATORICS
+# ============================================================
+
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me "📈 SECTION 5: FACTORIAL & COMBINATORICS"
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me ""
+
+fn factorial_calc(n) {
+    today result is 1
+    today i is 2
+    
+    while i <= n {
+        result = result * i
+        i = i + 1
+    }
+    
+    return result
+}
+
+fn permutation_calc(n, r) {
+    today numerator is factorial_calc(n)
+    today denominator is factorial_calc(n - r)
+    return numerator / denominator
+}
+
+fn combination_calc(n, r) {
+    today num is permutation_calc(n, r)
+    today denom is factorial_calc(r)
+    return num / denom
+}
+
+# Test: Factorials
+tell me "Factorials:"
+tell me "  5! = " + factorial_calc(5)
+tell me "  7! = " + factorial_calc(7)
+tell me ""
+
+# Test: Permutations & Combinations
+tell me "Permutations & Combinations:"
+tell me "  P(5,3) = " + permutation_calc(5, 3)
+tell me "  C(5,3) = " + combination_calc(5, 3)
+tell me ""
+
+
+# ============================================================
+# SECTION 6: DATA STRUCTURES
+# ============================================================
+
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me "📦 SECTION 6: DATA STRUCTURES (তথ্য কাঠামো)"
+tell me "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+tell me ""
+
+# Lists
+today numbers is [2, 3, 5, 7, 11, 13, 17, 19]
+tell me "List of Prime Numbers:"
+tell me numbers
+tell me ""
+
+# Maps (Dictionary)
+today calculator_info is {"name": "Aquamarine Calculator", "version": "1.0", "language": "Luminous"}
+today c_name is calculator_info["name"]
+today c_ver is calculator_info["version"]
+today c_lang is calculator_info["language"]
+
+tell me "Calculator Information:"
+tell me "  Name: " + c_name
+tell me "  Version: " + c_ver
+tell me "  Language: " + c_lang
+tell me ""
+
+
+# ============================================================
+# FINAL SUMMARY
+# ============================================================
+
+tell me "╔════════════════════════════════════════════════════════════════╗"
+tell me "║                    ✅ PROGRAM COMPLETED ✅                     ║"
+tell me "║                                                                ║"
+tell me "║  Aquamarine Nexus Mathematics Library                        ║"
+tell me "║  Implemented in Luminous Programming Language               ║"
+tell me "║                                                                ║"
+tell me "║  Topics Covered:                                             ║"
+tell me "║  ✓ Linear Equations                                          ║"
+tell me "║  ✓ Quadratic Equations                                       ║"
+tell me "║  ✓ Prime Numbers & Factorization                             ║"
+tell me "║  ✓ GCD & LCM                                                 ║"
+tell me "║  ✓ Factorial & Combinatorics                                 ║"
+tell me "║  ✓ Data Structures                                           ║"
+tell me "║                                                                ║"
+tell me "║  🌊 Pure Luminous Code • Zero Dependencies 🌊                 ║"
+tell me "╚════════════════════════════════════════════════════════════════╝"
+tell me ""
+tell me "Program executed successfully! 🚀"

@@ -1,0 +1,24 @@
+print("=== 1. RANGE FOR LOOP WITH STEP & BREAK ===")
+for i from 1 to 10 step 2 {
+    if i == 7 {
+        print("Breaking at 7!")
+        break
+    }
+    print("i = ${i}")
+}
+
+print("=== 2. FOR-EACH LOOP OVER ARRAY ===")
+fruits = ["Apple", "Mango", "Cherry", "Banana"]
+for each fruit in fruits {
+    if fruit == "Cherry" {
+        continue
+    }
+    print("Fruit: ${fruit}")
+}
+
+print("=== 3. WHILE LOOP ===")
+count = 3
+while count > 0 {
+    print("Countdown: ${count}")
+    count = count - 1
+}

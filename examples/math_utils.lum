@@ -1,0 +1,7 @@
+fn cube(x) {
+    return x * x * x
+}
+
+is_odd = fn(x) {
+    return (x % 2) != 0
+}

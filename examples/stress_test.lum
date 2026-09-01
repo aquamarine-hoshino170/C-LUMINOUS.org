@@ -1,0 +1,56 @@
+print("==================================================")
+print("  ❖ LUMINOUS: DEDUCTIVE STRESS-TEST ENGINE ❖     ")
+print("==================================================")
+
+# --- TEST 1: Deep Recursion ---
+print("\n--- TEST 1: Deep Recursion (Depth 150) ---")
+fn stress_fact(n) {
+    if n <= 1 {
+        return 1
+    }
+    return n * stress_fact(n - 1)
+}
+today ans is stress_fact(150)
+tell me "150 Factorial recursion result:"
+tell me ans
+
+# --- TEST 2: Type Mismatch Chaos ---
+print("\n--- TEST 2: Type Mismatch Chaos ---")
+today mixed is ["hello", 42, true] + "world"
+today logic_trap is not not not true and nil
+tell me "Mixed Concatenation Result:"
+tell me mixed
+tell me "Logic Trap (Expected false):"
+tell me logic_trap
+
+# --- TEST 3: Lexical Scope & Nested Closures ---
+print("\n--- TEST 3: Lexical Scope & Closures ---")
+fn make_counter(start) {
+    fn inner(step) {
+        return start + step
+    }
+    return inner
+}
+today add_five is make_counter(5)
+today result is add_five(10)
+tell me "Closure Result (Expected 15):"
+tell me result
+
+# --- TEST 4: Heavy Data Pipeline (Filter & Map) ---
+print("\n--- TEST 4: Heavy Data Pipeline (Even Squares) ---")
+today data is [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+today even_nums is filter(|x| => x % 2 == 0, data)
+today chained is map(|x| => x * x, even_nums)
+tell me "Chained filter & map (Even squares):"
+tell me chained
+
+# --- TEST 5: Out of Bounds & Missing Keys ---
+print("\n--- TEST 5: Out of Bounds & Missing Keys ---")
+today arr is [10, 20]
+today out_of_bounds is arr[99]
+today dict_trap is {"key": "value"}["missing_key"]
+tell me "Out of bounds (Expected nil):"
+tell me out_of_bounds
+tell me "Missing key (Expected nil):"
+tell me dict_trap
+print("\n[✓] ALL 5 DEDUCTIVE STRESS TESTS COMPLETED.")

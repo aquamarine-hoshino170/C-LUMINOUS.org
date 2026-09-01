@@ -1,0 +1,35 @@
+print("==================================================")
+print("  ❖ C LUMINOUS: DYNAMIC LIST & STRING ENGINE ❖    ")
+print("==================================================")
+
+# ১. লিস্ট তৈরি ও প্রিন্ট
+particles = ["Photon", "Electron", "Neutrino"]
+print("Initial particle list:")
+print(particles)
+
+print("List length [Expected: 3]:")
+print(len(particles))
+
+print("Element at index 1 [Expected: Electron]:")
+print(particles[1])
+
+# ২. লিস্টে নতুন এলিমেন্ট যোগ (Append)
+particles.append("Graviton")
+print("After append('Graviton'):")
+print(particles)
+
+# ৩. ইনডেক্স অনুযায়ী মান পরিবর্তন (Mutation)
+particles[0] = "Tachyon"
+print("After mutating index 0 to 'Tachyon':")
+print(particles)
+
+# ৪. লুপের মাধ্যমে অ্যারের যোগফল নির্ণয়
+numbers = [10, 20, 30, 40, 50]
+i = 0
+sum = 0
+while i < len(numbers) {
+    sum = sum + numbers[i]
+    i = i + 1
+}
+print("Sum of numbers in list [Expected: 150]:")
+print(sum)

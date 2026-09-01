@@ -1,0 +1,18 @@
+fn quantum_energy_level(n, L, mass) {
+    let pi_val = 3.1415926535;
+    let hbar = 1.0;
+    let numerator = (n * n) * (pi_val * pi_val) * (hbar * hbar);
+    let denominator = 2.0 * mass * (L * L);
+    return numerator / denominator;
+}
+
+print("==================================================");
+print("    ❖ C LUMINOUS: QUANTUM ENERGY SPECTRUM ❖       ");
+print("==================================================");
+
+let n = 1.0;
+while (n < 4.0) {
+    let energy = quantum_energy_level(n, 1.0, 1.0);
+    print(energy);
+    n = n + 1.0;
+}

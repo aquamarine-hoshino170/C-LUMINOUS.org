@@ -1,0 +1,21 @@
+print("=== DICTIONARY & SLICE TESTS ===")
+
+user = {"name": "Luminous", "ver": 2}
+print("Initial Dict: " + user)
+
+print("Has 'name': " + has_key(user, "name"))
+print("Has 'status': " + has_key(user, "status"))
+
+print("Get 'ver': " + get(user, "ver", 0))
+print("Get 'status' (Default): " + get(user, "status", "Active"))
+
+user = set(user, "arch", "Rust")
+print("Updated Dict: " + user)
+
+nums = [10, 20, 30, 40, 50]
+sliced_nums = slice(nums, 1, 4)
+print("Slice List (1 to 4): " + sliced_nums)
+
+text = "AutonomousEngine"
+sliced_text = slice(text, 0, 10)
+print("Slice String (0 to 10): " + sliced_text)

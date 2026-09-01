@@ -1,0 +1,35 @@
+print("==================================================")
+print("  ❖ LUMINOUS: INFINITE MATRIX ADDITION ENGINE ❖   ")
+print("==================================================")
+
+# ম্যাট্রিক্স A এর অসীম উপাদান পাওয়ার ফাংশন: A[i][j] = i + j
+fn matrix_a(i, j) {
+    return i + j
+}
+
+# ম্যাট্রিক্স B এর অসীম উপাদান পাওয়ার ফাংশন: B[i][j] = 2 * i * j
+fn matrix_b(i, j) {
+    return 2.0 * i * j
+}
+
+# অসীম ম্যাট্রিক্স যোগের নিয়ম: C[i][j] = A[i][j] + B[i][j]
+fn add_infinite_matrix(i, j) {
+    val_a = matrix_a(i, j)
+    val_b = matrix_b(i, j)
+    return val_a + val_b
+}
+
+# টেস্ট ১: ছোট ইনডেক্স C[2][3]
+# A[2][3] = 2 + 3 = 5
+# B[2][3] = 2 * 2 * 3 = 12
+# C[2][3] = 5 + 12 = 17
+res1 = add_infinite_matrix(2.0, 3.0)
+print("Element C[2][3] [Expected: 17]:")
+print(res1)
+
+# টেস্ট ২: বিশাল ইনফিনিট ইনডেক্স C[1000000][2000000] (জিরো মেমরি লিক)
+# A = 1000000 + 2000000 = 3000000
+# B = 2 * 1000000 * 2000000 = 4000000000000
+res2 = add_infinite_matrix(1000000.0, 2000000.0)
+print("Element C[1000000][2000000] [Expected: 4000003000000]:")
+print(res2)

@@ -1,0 +1,35 @@
+print("==================================================")
+print(" ❖ LUMINOUS: MATRIX & HASHMAP DEEP MUTATION ❖ ")
+print("==================================================")
+
+# --- TEST 1: 2D Matrix Mutation ---
+print("\n--- TEST 1: 2D Matrix Deep Assignments ---")
+today C is [[0, 0], [0, 0]]
+C[0][0] = 19
+C[0][1] = 22
+C[1][0] = 43
+C[1][1] = 50
+tell me "Matrix C after multi-level mutation:"
+tell me C
+
+# --- TEST 2: Word Frequency Map ---
+print("\n--- TEST 2: Word Frequency Map ---")
+today text is "pure logic pure rust pure mathematics pure logic"
+today words is split(text, " ")
+today freq is {}
+
+today i is 0
+today n is len(words)
+while i < n {
+    today w is words[i]
+    if freq[w] == nil {
+        freq[w] = 1
+    } else {
+        freq[w] = freq[w] + 1
+    }
+    i = i + 1
+}
+tell me "Word Frequency Map:"
+tell me freq
+
+print("\n[✓] ALL DEEP ASSIGNMENTS COMPLETED.")

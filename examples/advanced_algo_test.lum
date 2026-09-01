@@ -1,0 +1,53 @@
+print("==================================================")
+print("     ❖ LUMINOUS: ADVANCED ALGORITHMIC TEST ❖      ")
+print("==================================================")
+
+# --- 1. MEMOIZED FIBONACCI ---
+print("\n--- 1. Memoized Fibonacci (n = 45) ---")
+today memo is {0: 0, 1: 1}
+fn fib_memo(n) {
+    if memo[n] != nil {
+        return memo[n]
+    }
+    today res is fib_memo(n - 1) + fib_memo(n - 2)
+    memo[n] = res
+    return res
+}
+today f45 is fib_memo(45)
+tell me "Fibonacci(45) result:"
+tell me f45
+
+# --- 2. ARRAY SORTING ---
+print("\n--- 2. Bubble Sort Mutation ---")
+fn bubble_sort(arr) {
+    today n is len(arr)
+    today i is 0
+    while i < n {
+        today j is 0
+        while j < n - i - 1 {
+            if arr[j] > arr[j + 1] {
+                today temp is arr[j]
+                arr[j] = arr[j + 1]
+                arr[j + 1] = temp
+            }
+            j = j + 1
+        }
+        i = i + 1
+    }
+    return arr
+}
+today raw_list is [64, 34, 25, 12, 22, 11, 90]
+today sorted_list is bubble_sort(raw_list)
+tell me "Sorted List Output:"
+tell me sorted_list
+
+# --- 3. FILE I/O PERSISTENCE ---
+print("\n--- 3. Disk I/O Integration ---")
+today payload is "Luminous Runtime: Data successfully written to storage!"
+write_file("storage_test.txt", payload)
+
+today loaded_data is read_file("storage_test.txt")
+tell me "Disk Persistence Verification:"
+tell me loaded_data
+
+print("\n[✓] ADVANCED ALGORITHMIC TESTS COMPLETED.")

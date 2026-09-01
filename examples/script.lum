@@ -1,0 +1,17 @@
+# Physical and Mathematical Modeling in C Luminous
+print("=== Pythonic C Luminous Script ===")
+
+G = 6.67430e-11
+M = 5.972e24
+R = 6371000.0
+
+# Escape Velocity: v_esc = sqrt(2 * G * M / R)
+v_esc = sqrt((2.0 * G * M) / R)
+print("Earth Escape Velocity (m/s):")
+print(v_esc)
+
+# Kinetic Energy of 1000kg object at escape velocity: 0.5 * m * v^2
+mass = 1000.0
+KE = 0.5 * mass * (v_esc ^ 2.0)
+print("Kinetic Energy (Joules):")
+print(KE)

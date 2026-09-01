@@ -1,0 +1,33 @@
+print("==================================================")
+print("  ❖ LUMINOUS: JULIA-DNA MATH & BROADCAST TEST ❖   ")
+print("==================================================")
+
+# ১. জুলিয়া-স্টাইল ওয়ান-লাইনার ফাংশন
+fn f(x, y) = 3x + 2y + 5
+
+x = 4.0
+y = 10.0
+
+# 3(4) + 2(10) + 5 = 12 + 20 + 5 = 37
+res = f(x, y)
+print("1. Implied Multiplication Result [3x + 2y + 5]:")
+print(res)
+
+# ২. ডট-ব্রডকাস্টিং (Dot Broadcasting Vector Math)
+vec_a = [10.0, 20.0, 30.0]
+vec_b = [2.0, 4.0, 5.0]
+
+# ভেক্টর স্কেলার যোগ (Vector .+ Scalar)
+v_plus = vec_a .+ 5.0
+print("2. Vector .+ 5.0:")
+print(v_plus)
+
+# এলিমেন্ট-ওয়াইজ গুণ (Element-wise Vector .* Vector)
+v_mult = vec_a .* vec_b
+print("3. Vector .* Vector [Expected: [20, 80, 150]]:")
+print(v_mult)
+
+# এলিমেন্ট-ওয়াইজ ভাগ (Element-wise Vector ./ Vector)
+v_div = vec_a ./ vec_b
+print("4. Vector ./ Vector [Expected: [5, 5, 6]]:")
+print(v_div)

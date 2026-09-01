@@ -1,0 +1,12 @@
+print("=== CLI ARGUMENTS TEST ===")
+print("Total Arguments Passed: ${len(args)}")
+print("Running File: ${args[0]}")
+
+today mass is parseFloat(args[1])
+today velocity is parseFloat(args[2])
+
+v_sq = pow(velocity, 2)
+ke = 0.5 * mass * v_sq
+
+print("Calculated Kinetic Energy for m=${mass}kg, v=${velocity}m/s:")
+print("${ke} Joules")

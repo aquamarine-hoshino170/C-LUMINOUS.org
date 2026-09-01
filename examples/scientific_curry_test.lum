@@ -1,0 +1,62 @@
+print("==================================================")
+print("  ❖ LUMINOUS: SCIENTIFIC & CURRYING ENGINE ❖      ")
+print("==================================================")
+
+# --- 1. Matrix Dot Product ---
+print("\n--- 1. Matrix Dot Product (2x2) ---")
+today A is [[1, 2], [3, 4]]
+today B is [[5, 6], [7, 8]]
+today C is [[0, 0], [0, 0]]
+
+today i is 0
+while i < 2 {
+    today j is 0
+    while j < 2 {
+        today k is 0
+        today sum is 0
+        while k < 2 {
+            sum = sum + (A[i][k] * B[k][j])
+            k = k + 1
+        }
+        C[i][j] = sum
+        j = j + 1
+    }
+    i = i + 1
+}
+tell me "Matrix C Output:"
+tell me C
+
+# --- 2. Word Frequency Counter ---
+print("\n--- 2. Word Frequency Counter ---")
+today sentence is "luminous is fast and luminous is safe"
+today words is split(sentence, " ")
+today freq is {}
+today idx is 0
+while idx < len(words) {
+    today w is words[idx]
+    if freq[w] == nil {
+        freq[w] = 1
+    } else {
+        freq[w] = freq[w] + 1
+    }
+    idx = idx + 1
+}
+tell me "Frequency Map Output:"
+tell me freq
+
+# --- 3. Multi-Level Currying ---
+print("\n--- 3. Multi-Level Currying ---")
+fn multiply_base(base) {
+    fn with_multiplier(x) {
+        fn with_offset(offset) {
+            return (base * x) + offset
+        }
+        return with_offset
+    }
+    return with_multiplier
+}
+today compute is multiply_base(10)(5)(3)
+tell me "Curried Result (Expected: 53):"
+tell me compute
+
+print("\n[✓] ALL SCIENTIFIC & FUNCTIONAL TESTS FINISHED.")

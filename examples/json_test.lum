@@ -1,0 +1,9 @@
+print("=== 1. JSON ENCODE TESTS ===")
+data_list = ["Rust", "Luminous", 2026, true]
+encoded = jsonEncode(data_list)
+print("Encoded JSON String: ${encoded}")
+
+print("=== 2. JSON DECODE TESTS ===")
+json_str = "[10, 20, 30, 40]"
+decoded_list = jsonDecode(json_str)
+print("Decoded Array: ${decoded_list}")

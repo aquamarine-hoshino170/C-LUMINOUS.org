@@ -1,0 +1,21 @@
+print("=== 1. MATH LIBRARY TESTS ===")
+print("abs(-42)        = ${abs(-42)}")
+print("sqrt(144)       = ${sqrt(144)}")
+print("pow(2, 5)       = ${pow(2, 5)}")
+print("min(10, 25)     = ${min(10, 25)}")
+print("max(10, 25)     = ${max(10, 25)}")
+print("floor(5.8)      = ${floor(5.8)}")
+print("ceil(5.2)       = ${ceil(5.2)}")
+print("round(5.5)      = ${round(5.5)}")
+
+print("=== 2. FILE I/O TESTS ===")
+test_file = "sample.txt"
+write_res = writeFile(test_file, "Hello from Luminous Engine!\n")
+print("Write File Success: ${write_res}")
+
+append_res = appendFile(test_file, "Second Line: System I/O is Active.\n")
+print("Append File Success: ${append_res}")
+
+content = readFile(test_file)
+print("File Content Read:")
+print(content)

@@ -1,0 +1,13 @@
+print("==================================================")
+print("  ❖ LUMINOUS: C FOREIGN FUNCTION INTERFACE (FFI) ❖ ")
+print("==================================================")
+
+# ১. C শেয়ার্ড লাইব্রেরি থেকে সরাসরি fast_power কল করা: 2^10 = 1024
+pow_res = ffi_call_num("./libnative_math.so", "fast_power", 2.0, 10.0)
+print("C FFI fast_power(2.0, 10.0) Result [Expected: 1024]:")
+print(pow_res)
+
+# ২. C ফাংশন fast_add কল করা: 13.5 + 26.5 = 40.0
+add_res = ffi_call_num("./libnative_math.so", "fast_add", 13.5, 26.5)
+print("C FFI fast_add(13.5, 26.5) Result [Expected: 40]:")
+print(add_res)

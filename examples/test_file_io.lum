@@ -1,0 +1,5 @@
+print("=== C Luminous File Engine ===")
+write_file("output.txt", "Invariant State Validated")
+content = read_file("output.txt")
+print("Read File Content:")
+print(content)

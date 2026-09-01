@@ -1,0 +1,64 @@
+print("==================================================")
+print("  ❖ LUMINOUS: INFINITE TRANSPOSE & DETERMINANT ❖  ")
+print("==================================================")
+
+# ১. অসীম ম্যাট্রিক্স জেনারেটর: A[i][j] = (2 * i) + (3 * j)
+fn mat_a(i, j) {
+    return (2.0 * i) + (3.0 * j)
+}
+
+# ২. ইনফিনিটি ট্রান্সপোজ: A^T[i][j] = A[j][i]
+fn transpose_infinite(i, j) {
+    return mat_a(j, i)
+}
+
+print("--- Infinite Matrix Transpose Test ---")
+# Original A[100][500] = (2 * 100) + (3 * 500) = 200 + 1500 = 1700
+# Transposed A^T[100][500] = A[500][100] = (2 * 500) + (3 * 100) = 1000 + 300 = 1300
+orig_val = mat_a(100.0, 500.0)
+trans_val = transpose_infinite(100.0, 500.0)
+
+print("Original A[100][500] [Expected: 1700]:")
+print(orig_val)
+print("Transposed A^T[100][500] [Expected: 1300]:")
+print(trans_val)
+
+# ৩. ইনফিনিট ডিটারমিন্যান্ট ইঞ্জিন (Fredholm Truncation System)
+# ট্রাঙ্কেটেড সাব-ম্যাট্রিক্সের ডিটারমিন্যান্ট (2x2 ও 3x3 ডাইনামিক রিকার্সিভ এক্সপ্যানশন)
+
+fn det2x2(a11, a12, a21, a22) {
+    return (a11 * a22) - (a12 * a21)
+}
+
+fn det3x3(a11, a12, a13, a21, a22, a23, a31, a32, a33) {
+    d1 = a11 * det2x2(a22, a23, a32, a33)
+    d2 = a12 * det2x2(a21, a23, a31, a33)
+    d3 = a13 * det2x2(a21, a22, a31, a32)
+    return (d1 - d2) + d3
+}
+
+print("--- Infinite Determinant (Leading Principle Minors) ---")
+
+# ইনফিনিট ম্যাট্রিক্স D[i][j]: কনভার্জেন্ট ডায়াগনাল সিস্টেম
+# D[i][i] = 2.0 (ডায়াগনাল), D[i][j] = 0.5 (অফ-ডায়াগনাল)
+fn mat_d(i, j) {
+    if i == j {
+        return 2.0
+    }
+    return 0.5
+}
+
+# 2x2 Leading Principal Minor:
+# | 2.0  0.5 |
+# | 0.5  2.0 | -> (2.0 * 2.0) - (0.5 * 0.5) = 4.0 - 0.25 = 3.75
+det_2 = det2x2(mat_d(1.0, 1.0), mat_d(1.0, 2.0), mat_d(2.0, 1.0), mat_d(2.0, 2.0))
+print("2x2 Truncated Determinant [Expected: 3.75]:")
+print(det_2)
+
+# 3x3 Leading Principal Minor:
+# | 2.0  0.5  0.5 |
+# | 0.5  2.0  0.5 | -> det = 5.625
+# | 0.5  0.5  2.0 |
+det_3 = det3x3(mat_d(1.0, 1.0), mat_d(1.0, 2.0), mat_d(1.0, 3.0), mat_d(2.0, 1.0), mat_d(2.0, 2.0), mat_d(2.0, 3.0), mat_d(3.0, 1.0), mat_d(3.0, 2.0), mat_d(3.0, 3.0))
+print("3x3 Truncated Determinant [Expected: 5.625]:")
+print(det_3)

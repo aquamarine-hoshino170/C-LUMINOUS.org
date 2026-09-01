@@ -1,0 +1,76 @@
+print("==================================================")
+print("  ❖ LUMINOUS: ULTIMATE ARCHITECTURE TEST ❖       ")
+print("==================================================")
+
+# --- 1. Binary Search Tree (BST) ---
+print("\n--- 1. Binary Search Tree In-Order Traversal ---")
+fn insert_tree(root, val) {
+    if root == nil {
+        return {"val": val, "left": nil, "right": nil}
+    }
+    if val < root["val"] {
+        root["left"] = insert_tree(root["left"], val)
+    } else {
+        root["right"] = insert_tree(root["right"], val)
+    }
+    return root
+}
+
+fn inorder(root, acc) {
+    if root == nil {
+        return acc
+    }
+    inorder(root["left"], acc)
+    push(acc, root["val"])
+    inorder(root["right"], acc)
+    return acc
+}
+
+today tree is nil
+today values is [50, 30, 70, 20, 40, 60, 80]
+today i is 0
+while i < len(values) {
+    tree = insert_tree(tree, values[i])
+    i = i + 1
+}
+today sorted_tree is inorder(tree, [])
+tell me "BST Traversal Output:"
+tell me sorted_tree
+
+# --- 2. Numerical Convergence (Newton-Raphson) ---
+print("\n--- 2. Numerical Convergence (Newton-Raphson Sqrt) ---")
+fn sqrt_newton(n) {
+    today x is n / 2.0
+    today j is 0
+    while j < 15 {
+        x = 0.5 * (x + (n / x))
+        j = j + 1
+    }
+    return x
+}
+today root2 is sqrt_newton(2.0)
+today root144 is sqrt_newton(144.0)
+tell me "Sqrt(2.0):"
+tell me root2
+tell me "Sqrt(144.0):"
+tell me root144
+
+# --- 3. Stateful Stream Generator ---
+print("\n--- 3. Stateful Stream Generator ---")
+fn create_stream(start, step) {
+    today current is start
+    fn next_val() {
+        today res is current
+        current = current + step
+        return res
+    }
+    return next_val
+}
+today gen is create_stream(10, 5)
+today s1 is gen()
+today s2 is gen()
+today s3 is gen()
+tell me "Stream Generated Sequence:"
+tell me [s1, s2, s3]
+
+print("\n[✓] ALL ULTIMATE SYSTEM TESTS COMPLETED.")

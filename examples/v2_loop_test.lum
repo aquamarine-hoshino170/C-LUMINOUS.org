@@ -1,0 +1,14 @@
+numbers = [10, 20, 30]
+sum = 0
+
+print("--- Iterating over list ---")
+for x in numbers {
+    print("Processing item: " + x)
+    sum = sum + x
+}
+print("Total Sum: " + sum)
+
+print("\n--- Iterating with range ---")
+for i in range(1, 4) {
+    print("Step: " + i)
+}

@@ -1,0 +1,40 @@
+print("==================================================")
+print("     ❖ C LUMINOUS: PURE PROGRAMMING DEMO ❖        ")
+print("==================================================")
+
+# 1. User Defined Function: Relativistic Gamma Factor
+fn lorentz_factor(v, c) {
+    beta = v / c
+    return 1.0 / sqrt(1.0 - (beta ^ 2.0))
+}
+
+# 2. Recursive Factorial Function
+fn factorial(n) {
+    if n <= 1.0 {
+        return 1.0
+    }
+    return n * factorial(n - 1.0)
+}
+
+# Test Lorentz Factor at 0.8c
+c = 300000.0
+v = 240000.0
+gamma = lorentz_factor(v, c)
+print("Lorentz Factor (gamma) at 0.8c [Expected: 1.666667]:")
+print(gamma)
+
+# Test Recursive Factorial (6! = 720.0)
+fact6 = factorial(6.0)
+print("Recursive Factorial of 6 [Expected: 720.000000]:")
+print(fact6)
+
+# 3. While Loop Simulation: Sum of First 10 Integers
+print("--- Calculating Loop Invariant (Sum 1..10) ---")
+i = 1.0
+total = 0.0
+while i <= 10.0 {
+    total = total + i
+    i = i + 1.0
+}
+print("Sum Total [Expected: 55.000000]:")
+print(total)

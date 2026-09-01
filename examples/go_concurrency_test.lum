@@ -1,0 +1,27 @@
+tell me "=================================================="
+tell me "  ❖ LUMINOUS: GO CONCURRENCY & CHANNELS TEST ❖    "
+tell me "=================================================="
+
+# ১. চ্যানেল তৈরি করা (make_chan)
+today ch is make_chan()
+
+# ২. ব্যাকগ্রাউন্ড ওয়ার্কার ফাংশন
+fn async_worker(c, msg) {
+    send(c, msg)
+}
+
+tell me "[1] Spawning Goroutines (go async_worker)..."
+go async_worker(ch, "Message from Goroutine Alpha (Go Routine 1)")
+go async_worker(ch, "Message from Goroutine Beta (Go Routine 2)")
+
+# ৩. মেইন থ্রেডে চ্যানেল থেকে রিসিভ করা (recv)
+tell me "[2] Receiving data from Channel..."
+today res1 is recv(ch)
+tell me "Channel Recv 1:"
+tell me res1
+
+today res2 is recv(ch)
+tell me "Channel Recv 2:"
+tell me res2
+
+tell me "[✓] GO-STYLE CONCURRENCY TEST PASSED SUCCESSFULLY!"

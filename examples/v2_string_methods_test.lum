@@ -1,0 +1,13 @@
+text = "Luminous Architecture"
+
+text_len = len(text)
+print("String Length (Expected 21): " + text_len)
+
+upper_text = upper(text)
+print("Uppercase: " + upper_text)
+
+lower_text = lower(text)
+print("Lowercase: " + lower_text)
+
+sub = substr(text, 0, 8)
+print("Substring (Expected Luminous): " + sub)

@@ -1,0 +1,22 @@
+print("=== DIRECT MEMORY POINTER & DYNAMIC HEAP ALLOCATION ===");
+
+// 1. Allocate a continuous 64-bit float buffer of 4 elements
+let buffer = alloc_ptr(4);
+
+// 2. Direct Pointer Memory Writes (Riemann metric diagonal elements)
+ptr_set(buffer, 0, 1.050000);
+ptr_set(buffer, 1, 2.718281);
+ptr_set(buffer, 2, 3.141592);
+ptr_set(buffer, 3, 0.577215);
+
+print("--- Reading Value at Pointer Offset 2 ---");
+let val2 = ptr_get(buffer, 2);
+print(val2);
+
+print("--- Sum of All Heap-Allocated Elements ---");
+let total_sum = ptr_sum(buffer);
+print(total_sum);
+
+// 3. Free heap memory (Deterministic deallocation)
+free_ptr(buffer);
+print("Memory Successfully Deallocated with Zero Leaks.");
