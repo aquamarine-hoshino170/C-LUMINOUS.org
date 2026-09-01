@@ -23,14 +23,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+      - name: Build site
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: './docs'
+          destination: './docs/_site'
+          verbose: true
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: './docs/_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
