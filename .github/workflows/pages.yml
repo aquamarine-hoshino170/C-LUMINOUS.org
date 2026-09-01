@@ -1,4 +1,4 @@
-name: Deploy Static HTML to GitHub Pages
+name: Deploy Static Pages
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './'
+          path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
