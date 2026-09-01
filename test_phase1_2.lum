@@ -1,0 +1,33 @@
+print("==================================================")
+print("  ❖ LUMINOUS: LAMBDA & ARRAY SLICING ENGINE ❖     ")
+print("==================================================")
+
+# ১. ল্যাম্বডা / অ্যানোনিমাস ফাংশন
+square = |x| => x * x
+res = square(8.0)
+print("Lambda square(8) [Expected: 64]:")
+print(res)
+
+# ২. হায়ার-অর্ডার ফাংশন: map() ও filter()
+nums = [1, 2, 3, 4, 5, 6]
+doubled = map(nums, |n| => n * 2)
+print("Map doubled numbers [Expected: [2, 4, 6, 8, 10, 12]]:")
+print(doubled)
+
+evens = filter(nums, |n| => (n == 2) or (n == 4) or (n == 6))
+print("Filtered evens [Expected: [2, 4, 6]]:")
+print(evens)
+
+# ৩. ডাইনামিক অ্যারে মেথডস: insert & pop
+nums.insert(0, 99)
+print("After insert(0, 99):")
+print(nums)
+
+nums.pop()
+print("After pop():")
+print(nums)
+
+# ৪. পাইথন-স্টাইল অ্যারে স্লাইসিং list[start:end]
+sliced = nums[1:4]
+print("Slice nums[1:4] [Expected: [1, 2, 3]]:")
+print(sliced)
