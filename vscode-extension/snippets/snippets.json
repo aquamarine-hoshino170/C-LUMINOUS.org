@@ -1,0 +1,49 @@
+{
+  "Variable Declaration": {
+    "prefix": "today",
+    "body": [
+      "today ${1:name} is ${2:value}"
+    ],
+    "description": "Declare a variable in Luminous"
+  },
+  "For Range Loop": {
+    "prefix": "for-range",
+    "body": [
+      "for ${1:i} from ${2:1} to ${3:10} step ${4:1} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Range-based for loop"
+  },
+  "For Each Loop": {
+    "prefix": "for-each",
+    "body": [
+      "for each ${1:item} in ${2:list} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Iterate over a list"
+  },
+  "Struct Definition": {
+    "prefix": "struct",
+    "body": [
+      "struct ${1:Name} {",
+      "\tfn ${2:methodName}(${3:args}) {",
+      "\t\t$0",
+      "\t}",
+      "}"
+    ],
+    "description": "Define a struct with methods"
+  },
+  "Try Catch Block": {
+    "prefix": "try-catch",
+    "body": [
+      "try {",
+      "\t$1",
+      "} catch (err) {",
+      "\tprint(\"Error: ${err}\")",
+      "}"
+    ],
+    "description": "Exception handling block"
+  }
+}

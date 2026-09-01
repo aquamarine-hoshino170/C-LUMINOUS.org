@@ -1,0 +1,7 @@
+{
+  "name": "my_first_app",
+  "version": "0.1.0",
+  "description": "A Luminous project",
+  "main": "src/main.lum",
+  "dependencies": {}
+}

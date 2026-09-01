@@ -1,0 +1,4 @@
+--- C Luminous Physical Manifold Output ---
+Speed of Light (c): 299792458 m/s
+Gravitational Constant (G): 6.67430e-11
+Planck Constant (hbar): 1.054571817e-34

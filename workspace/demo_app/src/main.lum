@@ -1,0 +1,7 @@
+# my_first_app - Entry Point
+print("========================================")
+print("  🚀 Welcome to my_first_app (Luminous Project)")
+print("========================================")
+
+today version is "0.1.0"
+print("Project initialized successfully on version: ${version}")

@@ -1,0 +1,45 @@
+{
+  "name": "luminous-lang",
+  "displayName": "Luminous Language Support",
+  "description": "Official syntax highlighting and snippets for the Luminous Programming Language",
+  "version": "1.0.0",
+  "publisher": "luminous-team",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "luminous",
+        "aliases": [
+          "Luminous",
+          "luminous",
+          "lum"
+        ],
+        "extensions": [
+          ".lum"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "luminous",
+        "scopeName": "source.lum",
+        "path": "./syntaxes/luminous.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "luminous",
+        "path": "./snippets/snippets.json"
+      }
+    ]
+  },
+  "dependencies": {
+    "adm-zip": "^0.6.0"
+  }
+}

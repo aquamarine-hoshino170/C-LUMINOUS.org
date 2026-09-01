@@ -1,0 +1,18 @@
+# 1. Numerical Derivative Approximation: f'(x)
+# Differentiate quadratic function: f(x) = x^2 => f'(x) = 2x
+fn diff_quad(x, h) {
+    f_plus = (x + h) ^ 2
+    f_minus = (x - h) ^ 2
+    return (f_plus - f_minus) / (2.0 * h)
+}
+
+# 2. Vector Euclidean Norm: ||v|| = sqrt(x^2 + y^2 + z^2)
+fn vec3_norm(x, y, z) {
+    sum_sq = (x ^ 2) + (y ^ 2) + (z ^ 2)
+    return sqrt(sum_sq)
+}
+
+# 3. Vector Dot Product: u . v
+fn vec3_dot(x1, y1, z1, x2, y2, z2) {
+    return (x1 * x2) + (y1 * y2) + (z1 * z2)
+}
