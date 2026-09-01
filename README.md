@@ -1,42 +1,58 @@
-# ✨ C-LUMINOUS — High‑Performance Optical Computing Framework
+# ✨ C-LUMINOUS — High-Performance Optical Computing Framework
 
-**সারসংক্ষেপ (BN):** C-LUMINOUS হল একটি উচ্চ‑পারফরম্যান্স C লাইব্রেরি অপটিক্যাল কম্পিউটিং, ফটোনিক সিমুলেশন এবং কোয়ান্টাম অপটিক্সের জন্য। (See full English README below.)
+C-LUMINOUS is a high-performance C library and toolkit for optical computing, photonic simulations, and quantum optical research. It focuses on numerical accuracy and runtime performance and provides modules for wave propagation, photonic circuits, quantum state simulation, nonlinear optics, and optical signal processing.
+
+Table of Contents
+- Overview
+- Key Features
+- Repository Layout
+- Build & Install
+- Examples
+- Documentation & GitHub Pages
+- Development & Debugging
+- Contributing
+- License
+- Contact
 
 ---
 
 ## Overview
 
-C-LUMINOUS is a high-performance C library and toolkit for optical computing, photonic simulations, and quantum optical phenomena. It focuses on speed and numerical precision and includes modules for wave propagation, photonic circuits, quantum states, nonlinear optics, and optical signal processing.
+C-LUMINOUS aims to provide a fast, extensible foundation for researchers and engineers building photonic simulations and optical computation systems. The codebase is primarily C for performance-critical components, with auxiliary tools and examples in Python and scripts.
 
-Key areas:
-- Quantum optics (coherent, squeezed, entangled states; measurement models)
-- Photonic computing and circuit simulation (beam splitters, phase shifters, interferometers)
+## Key Features
+
+- Core optical field engine (2D/3D)
+- Photonic circuit simulation (beam splitters, phase shifters, interferometers)
+- Quantum optics primitives (Fock states, coherent and squeezed states)
 - Wave propagation and Maxwell/FDTD solvers
-- Nonlinear optics (SHG/THG, parametric processes)
-- Optical signal processing (FFT-based analysis, filtering)
+- Nonlinear optics (second/third harmonic generation, parametric processes)
+- Optical signal processing (FFT-based analysis, filters)
+- Performance optimizations (SIMD, multithreading; optional CUDA acceleration)
 
 ---
 
-## Repository layout (high level)
+## Repository Layout
 
-- src/        — core C sources and optical engines
-- include/    — public headers (luminous.h)
-- examples/   — example programs and demos
-- docs/       — site content (GitHub Pages/Jekyll)
-- vscode-extension/ — VS Code language extension and packaging
-- pkg-manager/ — helper tools (Rust) for package tasks
-- index.html  — repository root demo / landing page
+- src/                — core C sources and numerical engines
+- include/            — public headers (e.g. luminous.h)
+- examples/           — example programs and demos
+- docs/               — documentation and GitHub Pages site sources
+- vscode-extension/   — VS Code language extension and packaging
+- pkg-manager/        — helper tools (Rust) for package tasks
+- index.html          — repository root demo / landing page
+- .github/workflows/  — CI and Pages deployment workflows
 
 ---
 
-## Build / Install
+## Build & Install
 
-Prerequisites:
+Prerequisites
 - C compiler (GCC 9+ or Clang 10+)
 - Make and/or CMake
-- Optional: CUDA for GPU acceleration
+- Optional: CUDA toolkit (for GPU acceleration)
 
-Build (Make):
+Build with Make
 
 ```bash
 git clone https://github.com/aquamarine-hoshino170/C-LUMINOUS.org.git
@@ -46,7 +62,7 @@ make all
 make test
 ```
 
-Build (CMake):
+Build with CMake
 
 ```bash
 mkdir build && cd build
@@ -55,7 +71,7 @@ cmake --build .
 ctest
 ```
 
-Python bindings (if present):
+Python bindings (if available)
 
 ```bash
 pip install -e .
@@ -63,25 +79,45 @@ pip install -e .
 python setup.py bdist_wheel
 ```
 
-Notes:
-- If you need GPU acceleration, install CUDA and enable via Makefile/CMake flags (if available).
+Notes
+- If your system has CUDA and the project supports it, enable GPU builds via Makefile/CMake options and install appropriate drivers.
 
 ---
 
 ## Examples
 
-Look in the examples/ directory for many sample programs (Gaussian beam propagation, quantum circuit demos, SHG examples). To run a simple demo (C):
+See the `examples/` directory for sample programs. Example usage (C):
 
-```bash
-cd examples
-# compile/run example as instructed in examples/README.md
+```c
+#include <luminous.h>
+
+int main() {
+    optical_field_t *field = optical_field_create(128, 128, 1.55e-6);
+    gaussian_beam_t beam = {.wavelength = 1.55e-6, .waist = 5e-6, .amplitude = 1.0};
+    optical_field_gaussian(field, beam);
+    optical_field_propagate(field, 1e-3);
+    optical_field_save_vtk(field, "output.vtk");
+    optical_field_free(field);
+    return 0;
+}
+```
+
+Python example (if bindings installed):
+
+```python
+import luminous as lum
+field = lum.OpticalField(size=256, wavelength=1.55e-6)
+beam = lum.GaussianBeam(waist=5e-6, amplitude=1.0)
+field.apply_beam(beam)
+field.propagate(distance=1e-3)
+intensity = field.intensity()
 ```
 
 ---
 
 ## Documentation & GitHub Pages
 
-Project documentation is maintained under docs/. A minimal Jekyll config has been added to docs/_config.yml. The repository includes a GitHub Actions workflow (.github/workflows/pages.yml) to build and deploy the Pages site.
+Project documentation lives under `docs/`. A minimal Jekyll config has been added at `docs/_config.yml`. There is a GitHub Actions workflow at `.github/workflows/pages.yml` that builds and deploys the site.
 
 If you want to preview the site locally:
 
@@ -91,27 +127,28 @@ bundle install
 bundle exec jekyll serve --source docs --destination docs/_site
 ```
 
-Note: the GitHub Actions workflow expects site sources under docs/. If your site files are elsewhere, edit `.github/workflows/pages.yml` to adjust the `source` input or move the site files into docs/.
+Note: The current Pages workflow expects site sources under `docs/`. If your content is in a different location, update `.github/workflows/pages.yml` to set the correct `source` input or move the site content into `docs/`.
 
 ---
 
 ## Development & Debugging
 
-- To inspect the repo locally:
-  - ls -la, open examples/, src/ and docs/ to see current content
-- There are several CI workflow runs in `.github/workflows/` that build and deploy pages; recent runs are visible at: https://github.com/aquamarine-hoshino170/C-LUMINOUS.org/actions
+- Inspect repository contents locally:
+  - `ls -la`, open `examples/`, `src/`, and `docs/` to review files
+- There are CI workflow runs in Settings → Actions or `https://github.com/aquamarine-hoshino170/C-LUMINOUS.org/actions`
+- If GitHub Actions fails during Pages build with errors like `No such file or directory @ dir_chdir0 - /github/workspace/docs`, ensure the `docs/` directory exists and contains the site sources.
 
 ---
 
 ## Contributing
 
-Contributions welcome. Common areas:
-- Add/extend optical components and solvers
+Contributions are welcome. Common areas for contribution:
+- Add or extend optical components and solvers
 - Improve performance and add GPU kernels
-- Expand documentation and tutorials under docs/
+- Expand documentation and tutorials under `docs/`
 - Tests and CI improvements
 
-Please open issues or pull requests.
+Please open issues or pull requests. Follow standard GitHub workflow: fork → branch → PR.
 
 ---
 
@@ -125,4 +162,4 @@ MIT © 2026 aquamarine-hoshino170
 
 GitHub: https://github.com/aquamarine-hoshino170/C-LUMINOUS.org
 
-If you'd like changes to this README (language, more technical details, Bengali translation), tell me which sections to expand and I'll update it.
+If you want additional sections (detailed API docs, full examples, or detailed install matrix), tell me what to add and I will update the README or add files under `docs/`.
