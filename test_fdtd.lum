@@ -1,0 +1,12 @@
+# Luminous Phase 3: 2D FDTD Maxwell Wave Equation Solver
+# Run 15 time-steps on a 5x5 Yee spatial grid
+let Ez_grid = fdtd2d(15, 5);
+
+# Extract detected optical power/intensity from the simulated wave
+let Ez_intensity = intensity(Ez_grid);
+
+print "=== LUMINOUS PHASE 3: 2D FDTD MAXWELL ELECTROMAGNETIC CORE ===";
+print "Calculated Electric Field Ez Grid after 15 Time Steps:";
+print Ez_grid;
+print "Spatial Electromagnetic Power Distribution (|Ez|^2):";
+print Ez_intensity;

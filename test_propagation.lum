@@ -1,0 +1,21 @@
+# Luminous Phase 2: 2D Angular Spectrum Beam Propagation
+# Input spatial optical field: 2x2 wavefront grid
+let E_initial = [
+    [1.0 + 0i, 0.0 + 0i],
+    [0.0 + 0i, 1.0 + 0i]
+];
+
+# Propagation parameters:
+# z = 0.5 m (distance)
+# wavelength = 0.0000006328 m (He-Ne Laser 632.8 nm)
+# dx = 0.00001 m (grid sampling period)
+let E_propagated = propagate2d(E_initial, 0.5, 0.0000006328, 0.00001);
+let I_propagated = intensity(E_propagated);
+
+print "=== LUMINOUS PHASE 2: 2D ANGULAR SPECTRUM PROPAGATION ===";
+print "Initial Wavefront Grid (z = 0):";
+print E_initial;
+print "Propagated Optical Field (z = 0.5m):";
+print E_propagated;
+print "Beam Intensity Distribution after Propagation:";
+print I_propagated;

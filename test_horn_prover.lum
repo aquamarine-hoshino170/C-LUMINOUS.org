@@ -1,0 +1,31 @@
+print("=== PURE FIRST-ORDER THEOREM PROVER (Horn Clause Inference) ===");
+
+// 1. Initialize Symbolic Knowledge Base
+let kb = kb_init();
+
+// 2. Assert Ground Axioms (Facts)
+kb_fact(kb, "topological_space");
+kb_fact(kb, "has_metric_tensor");
+kb_fact(kb, "symmetric_connection");
+
+// 3. Define Horn Clause Deductive Rules:
+// Rule 1: topological_space -> hausdorff
+kb_rule(kb, "hausdorff", "topological_space");
+
+// Rule 2: hausdorff AND has_metric_tensor -> riemannian_manifold
+kb_rule(kb, "riemannian_manifold", "hausdorff, has_metric_tensor");
+
+// Rule 3: riemannian_manifold AND symmetric_connection -> levi_civita_space
+kb_rule(kb, "levi_civita_space", "riemannian_manifold, symmetric_connection");
+
+print("--- Query 1: Is the structure a Riemannian Manifold? ---");
+let proof1 = kb_prove(kb, "riemannian_manifold");
+print(proof1);
+
+print("--- Query 2: Can Levi-Civita Connection be uniquely derived? ---");
+let proof2 = kb_prove(kb, "levi_civita_space");
+print(proof2);
+
+print("--- Query 3: Is it a Flat Euclidean Space without curvature? ---");
+let proof3 = kb_prove(kb, "flat_euclidean");
+print(proof3);

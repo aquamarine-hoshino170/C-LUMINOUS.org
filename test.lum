@@ -1,0 +1,5 @@
+let a = 40;
+let b = 2;
+let result = a + b;
+print "Luminous calculation:";
+print result;

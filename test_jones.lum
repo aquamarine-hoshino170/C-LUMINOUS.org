@@ -1,0 +1,27 @@
+# Jones Matrix Simulation in Luminous
+# Quarter-Wave Plate (fast axis horizontal):
+# J = [ [1, 0], [0, 1i] ]
+let QWP = [
+    [1 + 0i, 0 + 0i],
+    [0 + 0i, 0 + 1i]
+];
+
+# Incident Light (45 degree linearly polarized light):
+# E_in = [ [1], [1] ]
+let E_in = [
+    [1 + 0i],
+    [1 + 0i]
+];
+
+# Propagate light through the optical component using matrix multiplication (@)
+let E_out = QWP @ E_in;
+
+print "=== LUMINOUS JONES CALCULUS FOR POLARIZATION ===";
+print "Quarter-Wave Plate Operator (QWP):";
+print QWP;
+print "Input Polarized Field (Linear):";
+print E_in;
+print "Output Transformed Field (Circular Polarization):";
+print E_out;
+print "Output Intensity Profile:";
+print intensity(E_out);

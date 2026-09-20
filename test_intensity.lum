@@ -1,0 +1,22 @@
+# Optical Field Definition: E = 3 + 4i
+let E = 3 + 4i;
+let E_star = conj(E);
+let I = intensity(E);
+
+print "=== LUMINOUS OPTICAL PHYSICS VALIDATION ===";
+print "Electric Field (E):";
+print E;
+print "Conjugate Field (E*):";
+print E_star;
+print "Detected Optical Intensity (|E|^2):";
+print I;
+
+# 2D Grid Intensity Extraction
+let grid = [
+    [1 + 1i, 2 + 0i],
+    [0 + 2i, 3 + 4i]
+];
+let grid_I = intensity(grid);
+
+print "2D Optical Beam Grid Intensity Map:";
+print grid_I;

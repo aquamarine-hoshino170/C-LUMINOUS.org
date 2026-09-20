@@ -1,0 +1,17 @@
+# Luminous Phase 4: Quantum Optics Simulation
+# Input Single Photon State: |psi_in> = |1, 0>
+let psi_in = qstate([1.0 + 0i, 0.0 + 0i]);
+
+# Pass through 50:50 Beam Splitter Unitary Transformation
+let psi_out = beamsplitter(psi_in);
+
+# Compute quantum measurement probability distribution
+let prob_dist = intensity(psi_out);
+
+print "=== LUMINOUS PHASE 4: QUANTUM OPTICS & PHOTON EVOLUTION ===";
+print "Input Normalized Single-Photon State |psi_in>:";
+print psi_in;
+print "Superposed Output Quantum State |psi_out> after Beam Splitter:";
+print psi_out;
+print "Quantum Detection Probabilities [P(port_a), P(port_b)]:";
+print prob_dist;

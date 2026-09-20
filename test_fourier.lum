@@ -1,0 +1,17 @@
+# Optical Fourier Transform Simulation
+# Spatial aperture slit profile (1 where light passes, 0 where blocked)
+let slit_aperture = [1, 1, 0, 0];
+
+# Far-field Fraunhofer diffraction pattern obtained via Optical Fourier Transform
+let far_field_spectrum = dft(slit_aperture);
+
+# Detected Diffraction Intensity on the sensor screen
+let diffraction_intensity = intensity(far_field_spectrum);
+
+print "=== LUMINOUS OPTICAL FOURIER TRANSFORM (DFT) ===";
+print "Input Aperture Wavefront (Spatial Domain):";
+print slit_aperture;
+print "Far-Field Diffracted Field (Frequency Domain Spectrum):";
+print far_field_spectrum;
+print "Diffraction Pattern Intensity Distribution on Screen:";
+print diffraction_intensity;
