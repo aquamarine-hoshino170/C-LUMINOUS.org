@@ -1,0 +1,26 @@
+# Luminous Pure Symbolic Differentiation & Tensor Core
+print("=== LUMINOUS SCIENTIFIC COMPUTATION: SYMBOLIC CALCULUS & TENSORS ===");
+
+# 1. Native Tensor Transposition
+let matrix_A = [
+    [1, 2, 3],
+    [4, 5, 6]
+];
+let matrix_AT = transpose(matrix_A);
+print("Matrix A (2x3):");
+print(matrix_A);
+print("Transposed Matrix A^T (3x2):");
+print(matrix_AT);
+
+# 2. Sub-Tensor Slicing
+let row_slice = slice(matrix_A, 0, 1);
+print("Sub-Tensor Slicing [0:1]:");
+print(row_slice);
+
+# 3. Exact Pure Symbolic Calculus: diff(expr, "var")
+let x = 3.0;
+let df = diff(x * x + 2.0 * x, "x");
+
+print("Function f(x) = x^2 + 2x at x = 3.0");
+print("Exact Symbolic Derivative df/dx:");
+print(df);

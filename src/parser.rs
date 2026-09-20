@@ -148,6 +148,34 @@ impl Parser {
             Token::Imaginary(im) => Ok(Expr::Imaginary(im)),
             Token::Str(s) => Ok(Expr::Str(s)),
             Token::Identifier(id) => Ok(Expr::Variable(id)),
+            Token::Transpose => {
+                if !self.match_token(Token::LParen) { return Err("LUM-P4001: Expected '(' after transpose".into()); }
+                let inner = self.parse_expr()?;
+                if !self.match_token(Token::RParen) { return Err("LUM-P2004: Expected ')'".into()); }
+                Ok(Expr::Transpose(Box::new(inner)))
+            }
+            Token::Slice => {
+                if !self.match_token(Token::LParen) { return Err("LUM-P4002: Expected '(' after slice".into()); }
+                let target = self.parse_expr()?;
+                if !self.match_token(Token::Comma) { return Err("LUM-P4003: Expected ',' after target array".into()); }
+                let start = self.parse_expr()?;
+                if !self.match_token(Token::Comma) { return Err("LUM-P4003: Expected ',' after start index".into()); }
+                let end = self.parse_expr()?;
+                if !self.match_token(Token::RParen) { return Err("LUM-P2004: Expected ')'".into()); }
+                Ok(Expr::Slice { target: Box::new(target), start: Box::new(start), end: Box::new(end) })
+            }
+            Token::Diff => {
+                if !self.match_token(Token::LParen) { return Err("LUM-P4004: Expected '(' after diff".into()); }
+                let expr = self.parse_expr()?;
+                if !self.match_token(Token::Comma) { return Err("LUM-P4005: Expected ',' in diff()".into()); }
+                let var = match self.advance() {
+                    Token::Identifier(id) => id,
+                    Token::Str(s) => s,
+                    other => return Err(format!("LUM-P4006: Expected variable in diff(), found {:?}", other)),
+                };
+                if !self.match_token(Token::RParen) { return Err("LUM-P2004: Expected ')'".into()); }
+                Ok(Expr::Diff { expr: Box::new(expr), var })
+            }
             Token::KbInit => {
                 if !self.match_token(Token::LParen) { return Err("LUM-P3001: Expected '(' after kb_init".into()); }
                 if !self.match_token(Token::RParen) { return Err("LUM-P3002: Expected ')' in kb_init()".into()); }

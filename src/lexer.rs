@@ -17,6 +17,9 @@ pub enum Token {
     KbFact,
     KbRule,
     KbProve,
+    Transpose,
+    Slice,
+    Diff,
     Identifier(String),
     Int(i64),
     Float(f64),
@@ -50,13 +53,12 @@ pub fn tokenize(input: &str) -> Vec<Token> {
                 chars.next();
             }
             '/' => {
-                chars.next(); // first slash
+                chars.next();
                 if let Some(&'/') = chars.peek() {
-                    chars.next(); // consume second slash
-                    // single line comment: skip until newline
+                    chars.next();
                     while let Some(&ch) = chars.peek() {
-                        if ch == '\n' { break; }
                         chars.next();
+                        if ch == '\n' { break; }
                     }
                 } else {
                     tokens.push(Token::Slash);
@@ -65,8 +67,8 @@ pub fn tokenize(input: &str) -> Vec<Token> {
             '#' => {
                 chars.next();
                 while let Some(&ch) = chars.peek() {
-                    if ch == '\n' { break; }
                     chars.next();
+                    if ch == '\n' { break; }
                 }
             }
             '+' => { chars.next(); tokens.push(Token::Plus); }
@@ -91,11 +93,13 @@ pub fn tokenize(input: &str) -> Vec<Token> {
                 }
             }
             '"' => {
-                chars.next();
+                chars.next(); // Consume opening quote
                 let mut s = String::new();
                 while let Some(&ch) = chars.peek() {
-                    chars.next();
-                    if ch == '"' { break; }
+                    chars.next(); // Safely advance to next character
+                    if ch == '"' {
+                        break;
+                    }
                     s.push(ch);
                 }
                 tokens.push(Token::Str(s));
@@ -153,6 +157,9 @@ pub fn tokenize(input: &str) -> Vec<Token> {
                     "kb_fact" => tokens.push(Token::KbFact),
                     "kb_rule" => tokens.push(Token::KbRule),
                     "kb_prove" => tokens.push(Token::KbProve),
+                    "transpose" => tokens.push(Token::Transpose),
+                    "slice" => tokens.push(Token::Slice),
+                    "diff" => tokens.push(Token::Diff),
                     "i" => tokens.push(Token::Imaginary(1.0)),
                     _ => tokens.push(Token::Identifier(ident)),
                 }

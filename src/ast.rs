@@ -10,6 +10,16 @@ pub enum Expr {
     Intensity(Box<Expr>),
     Dft(Box<Expr>),
     Idft(Box<Expr>),
+    Transpose(Box<Expr>),
+    Slice {
+        target: Box<Expr>,
+        start: Box<Expr>,
+        end: Box<Expr>,
+    },
+    Diff {
+        expr: Box<Expr>,
+        var: String,
+    },
     Propagate2D {
         field: Box<Expr>,
         z: Box<Expr>,

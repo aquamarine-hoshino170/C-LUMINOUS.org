@@ -72,6 +72,20 @@ fn eval_expr(expr: &Expr, env: &mut Environment) -> Result<Value, String> {
             let val = eval_expr(inner, env)?;
             eval_dft_nd(val, true)
         }
+        Expr::Transpose(inner) => {
+            let val = eval_expr(inner, env)?;
+            eval_transpose(val)
+        }
+        Expr::Slice { target, start, end } => {
+            let t = eval_expr(target, env)?;
+            let s = eval_int(&eval_expr(start, env)?)? as usize;
+            let e = eval_int(&eval_expr(end, env)?)? as usize;
+            eval_slice(t, s, e)
+        }
+        Expr::Diff { expr: f_expr, var } => {
+            let d_ast = symbolic_diff(f_expr, var);
+            eval_expr(&d_ast, env)
+        }
         Expr::Propagate2D { field, z, wavelength, dx } => {
             let f_val = eval_expr(field, env)?;
             let z_val = eval_float(&eval_expr(z, env)?)?;
@@ -173,6 +187,123 @@ fn eval_expr(expr: &Expr, env: &mut Environment) -> Result<Value, String> {
             let r = eval_expr(right, env)?;
             eval_binary(l, op, r)
         }
+    }
+}
+
+// Pure Symbolic Differentiation Core: d(E)/dx
+fn symbolic_diff(expr: &Expr, var: &str) -> Expr {
+    match expr {
+        Expr::Variable(v) => {
+            if v == var {
+                Expr::Float(1.0)
+            } else {
+                Expr::Float(0.0)
+            }
+        }
+        Expr::Int(_) | Expr::Float(_) | Expr::Imaginary(_) | Expr::Str(_) => Expr::Float(0.0),
+        Expr::Binary { left, op, right } => match op {
+            BinaryOp::Add => Expr::Binary {
+                left: Box::new(symbolic_diff(left, var)),
+                op: BinaryOp::Add,
+                right: Box::new(symbolic_diff(right, var)),
+            },
+            BinaryOp::Sub => Expr::Binary {
+                left: Box::new(symbolic_diff(left, var)),
+                op: BinaryOp::Sub,
+                right: Box::new(symbolic_diff(right, var)),
+            },
+            BinaryOp::Mul => {
+                let u_prime_v = Expr::Binary {
+                    left: Box::new(symbolic_diff(left, var)),
+                    op: BinaryOp::Mul,
+                    right: right.clone(),
+                };
+                let u_v_prime = Expr::Binary {
+                    left: left.clone(),
+                    op: BinaryOp::Mul,
+                    right: Box::new(symbolic_diff(right, var)),
+                };
+                Expr::Binary {
+                    left: Box::new(u_prime_v),
+                    op: BinaryOp::Add,
+                    right: Box::new(u_v_prime),
+                }
+            }
+            BinaryOp::Div => {
+                let num = Expr::Binary {
+                    left: Box::new(Expr::Binary {
+                        left: Box::new(symbolic_diff(left, var)),
+                        op: BinaryOp::Mul,
+                        right: right.clone(),
+                    }),
+                    op: BinaryOp::Sub,
+                    right: Box::new(Expr::Binary {
+                        left: left.clone(),
+                        op: BinaryOp::Mul,
+                        right: Box::new(symbolic_diff(right, var)),
+                    }),
+                };
+                let den = Expr::Binary {
+                    left: right.clone(),
+                    op: BinaryOp::Mul,
+                    right: right.clone(),
+                };
+                Expr::Binary {
+                    left: Box::new(num),
+                    op: BinaryOp::Div,
+                    right: Box::new(den),
+                }
+            }
+            _ => Expr::Float(0.0),
+        },
+        _ => Expr::Float(0.0),
+    }
+}
+
+fn eval_transpose(val: Value) -> Result<Value, String> {
+    match val {
+        Value::Array(rows) => {
+            if rows.is_empty() {
+                return Ok(Value::Array(Vec::new()));
+            }
+            let mut mat: Vec<Vec<Value>> = Vec::new();
+            for r in rows {
+                match r {
+                    Value::Array(cols) => mat.push(cols),
+                    _ => return Err("LUM-T8001: Transpose requires a 2D matrix".into()),
+                }
+            }
+            if mat.is_empty() {
+                return Ok(Value::Array(Vec::new()));
+            }
+            let r_count = mat.len();
+            let c_count = mat[0].len();
+
+            let mut transposed = Vec::new();
+            for j in 0..c_count {
+                let mut new_row = Vec::new();
+                for i in 0..r_count {
+                    new_row.push(mat[i][j].clone());
+                }
+                transposed.push(Value::Array(new_row));
+            }
+            Ok(Value::Array(transposed))
+        }
+        _ => Err("LUM-T8003: Transpose requires an array".into()),
+    }
+}
+
+fn eval_slice(val: Value, start: usize, end: usize) -> Result<Value, String> {
+    match val {
+        Value::Array(arr) => {
+            let len = arr.len();
+            if start >= len || start >= end {
+                return Ok(Value::Array(Vec::new()));
+            }
+            let actual_end = end.min(len);
+            Ok(Value::Array(arr[start..actual_end].to_vec()))
+        }
+        _ => Err("LUM-T8004: slice target must be an array".into()),
     }
 }
 
@@ -567,6 +698,26 @@ fn eval_binary(left: Value, op: &BinaryOp, right: Value) -> Result<Value, String
                 if b == 0.0 { Err("LUM-R4002: Division by zero".into()) } else { Ok(Value::Float(a / b)) }
             }
             BinaryOp::Equal => Ok(Value::Bool(a == b)),
+            _ => Err("LUM-R4005: Unsupported operator".into()),
+        },
+        (Value::Int(a), Value::Float(b)) => match op {
+            BinaryOp::Add => Ok(Value::Float(a as f64 + b)),
+            BinaryOp::Sub => Ok(Value::Float(a as f64 - b)),
+            BinaryOp::Mul => Ok(Value::Float(a as f64 * b)),
+            BinaryOp::Div => {
+                if b == 0.0 { Err("LUM-R4002: Division by zero".into()) } else { Ok(Value::Float(a as f64 / b)) }
+            }
+            BinaryOp::Equal => Ok(Value::Bool(a as f64 == b)),
+            _ => Err("LUM-R4005: Unsupported operator".into()),
+        },
+        (Value::Float(a), Value::Int(b)) => match op {
+            BinaryOp::Add => Ok(Value::Float(a + b as f64)),
+            BinaryOp::Sub => Ok(Value::Float(a - b as f64)),
+            BinaryOp::Mul => Ok(Value::Float(a * b as f64)),
+            BinaryOp::Div => {
+                if b == 0 { Err("LUM-R4002: Division by zero".into()) } else { Ok(Value::Float(a / b as f64)) }
+            }
+            BinaryOp::Equal => Ok(Value::Bool(a == b as f64)),
             _ => Err("LUM-R4005: Unsupported operator".into()),
         },
         (Value::Str(a), Value::Str(b)) => match op {
