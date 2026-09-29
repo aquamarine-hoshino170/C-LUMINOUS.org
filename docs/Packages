@@ -1,0 +1,14 @@
+Package: luminous
+Architecture: arm
+Version: 0.2.0
+Priority: optional
+Section: devel
+Maintainer: Soma Dutta <aquamarine.dredge@gmail.com>
+Filename: ./luminous_0.2.0_arm.deb
+Size: 274856
+MD5sum: 140517052681290e58c3a3196ac4b362
+SHA1: a638c857db0acfcc3ab9584c0f384dcede74ff5c
+SHA256: 65de40a2466f4968123a0c40e35efda9fd195e74bd741b64cdf6a6cb1ca96cd1
+SHA512: 3c6791e0ca13bdc63f3c56e41cc43d98c03cfa65dd2fb556286045bc5e164a96b0055a839288d74169c857ad235130fe58adc447e657199d82ba5f0d0d7ff7d6
+Description: Luminous programming language compiler and runtime for Termux.
+
