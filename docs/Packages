@@ -3,13 +3,13 @@ Architecture: all
 Version: 0.2.0
 Priority: optional
 Section: devel
-Maintainer: Aquamarine Hoshino<aquamarine.hoshino.lab@gmail.com>
+Maintainer: Aquamarine Hoshino <aquamarine.hoshino.lab@gmail.com>
 Filename: ./luminous_0.2.0_all.deb
-Size: 824
-MD5sum: a01da3381ff08e140cc5e151444514a0
-SHA1: 434a8f9ccb26787e612890c348aa0cdffe598ac6
-SHA256: 8d5a72412d9615d0945fb340e63b1268f7f65f7aa8692922a755490a95bb304c
-SHA512: a534f2e9c4f81a04977c60ca645f30929f135f4337137f501c9a8f569b3238375d8c525907fb8bcb4487818dc7fcfa96d1ae890d210e6ff48a9ce2b35b6d2f56
+Size: 274872
+MD5sum: 4f8d8dd2eeba92d7d6acb47e494b919a
+SHA1: 9b3bf1d8827de4d79efd293fd20b0a394f4179f6
+SHA256: 806eb7255ea177a9f727affd23b314989c2d24908f685017a8922b462357869e
+SHA512: 358890b1c363255ae29e33b02d296fd2c0a73ce5a2a0a1cb9d4749f3c67e8fd00c719f1c02ac640f42b774162e9ff06488201c331c0bf9aa0b400d9f6beff8c3
 Description: Luminous scientific programming language compiler and runtime for Termux.
 
 Package: luminous
