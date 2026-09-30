@@ -20,3 +20,10 @@ stress_*.lum
 
 # Generated loop/demo artifacts
 *.lbc
+
+# Generated Assets & Artifacts
+assets/images/*.ppm
+assets/images/*.png
+assets/vector/*
+assets/models/*
+artifacts/*.lbc
