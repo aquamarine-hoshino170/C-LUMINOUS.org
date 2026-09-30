@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expr {
     Int(i64),
@@ -5,6 +6,7 @@ pub enum Expr {
     Imaginary(f64),
     Str(String),
     Variable(String),
+    Call { name: String, args: Vec<Expr> },
     Array(Vec<Expr>),
     Conj(Box<Expr>),
     Intensity(Box<Expr>),
@@ -16,6 +18,7 @@ pub enum Expr {
         start: Box<Expr>,
         end: Box<Expr>,
     },
+    Receive,
     Diff {
         expr: Box<Expr>,
         var: String,
@@ -53,6 +56,7 @@ pub enum Expr {
     },
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum BinaryOp {
     Add,
@@ -61,12 +65,47 @@ pub enum BinaryOp {
     Div,
     MatMul,
     Equal,
+    Less,
+    Greater,
+    LessEqual,
+    GreaterEqual,
 }
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
+    FnDef { name: String, params: Vec<String>, body: Box<Stmt> },
+    Return(Option<Expr>),
     Let(String, Expr),
+    Assign(String, Expr),
     Print(Expr),
     Import(String),
     Expr(Expr),
+    Block(Vec<Stmt>),
+    If {
+        cond: Expr,
+        then_branch: Box<Stmt>,
+        else_branch: Option<Box<Stmt>>,
+    },
+    Spawn(Box<Stmt>),
+    Send(Expr),
+    While {
+        cond: Expr,
+        body: Box<Stmt>,
+    },
+    CanvasDef {
+        width: Expr,
+        height: Expr,
+        properties: Vec<(String, Expr)>,
+    },
+    RenderPipeline {
+        source: Expr,
+        colormap: Option<String>,
+        target_path: Expr,
+    },
+    DiffusePipeline {
+        prompt: Expr,
+        steps: Expr,
+        guidance: Expr,
+        target_path: Expr,
+    },
 }

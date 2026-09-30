@@ -5,6 +5,31 @@ pub enum Token {
     Print,
     Import,
     Return,
+    Canvas,
+    Render,
+    To,
+    Using,
+    Background,
+    Camera,
+    Shader,
+    Colormap,
+    Diffuse,
+    Steps,
+    Guidance,
+    Noise,
+    // Control Flow Tokens
+    If,
+    Else,
+    While,
+    Spawn,
+    Send,
+    Receive,
+    // Operators & Comparisons
+    Less,
+    Greater,
+    LessEqual,
+    GreaterEqual,
+    // Scientific Math Tokens
     Conj,
     Intensity,
     Dft,
@@ -32,6 +57,7 @@ pub enum Token {
     At,
     Equal,
     EqualEqual,
+    Colon,
     LParen,
     RParen,
     LBrace,
@@ -49,9 +75,7 @@ pub fn tokenize(input: &str) -> Vec<Token> {
 
     while let Some(&c) = chars.peek() {
         match c {
-            ' ' | '\t' | '\r' | '\n' => {
-                chars.next();
-            }
+            ' ' | '\t' | '\r' | '\n' => { chars.next(); }
             '/' => {
                 chars.next();
                 if let Some(&'/') = chars.peek() {
@@ -71,6 +95,7 @@ pub fn tokenize(input: &str) -> Vec<Token> {
                     if ch == '\n' { break; }
                 }
             }
+            ':' => { chars.next(); tokens.push(Token::Colon); }
             '+' => { chars.next(); tokens.push(Token::Plus); }
             '-' => { chars.next(); tokens.push(Token::Minus); }
             '*' => { chars.next(); tokens.push(Token::Star); }
@@ -83,6 +108,24 @@ pub fn tokenize(input: &str) -> Vec<Token> {
             '}' => { chars.next(); tokens.push(Token::RBrace); }
             '[' => { chars.next(); tokens.push(Token::LBracket); }
             ']' => { chars.next(); tokens.push(Token::RBracket); }
+            '<' => {
+                chars.next();
+                if let Some(&'=') = chars.peek() {
+                    chars.next();
+                    tokens.push(Token::LessEqual);
+                } else {
+                    tokens.push(Token::Less);
+                }
+            }
+            '>' => {
+                chars.next();
+                if let Some(&'=') = chars.peek() {
+                    chars.next();
+                    tokens.push(Token::GreaterEqual);
+                } else {
+                    tokens.push(Token::Greater);
+                }
+            }
             '=' => {
                 chars.next();
                 if let Some(&'=') = chars.peek() {
@@ -93,12 +136,24 @@ pub fn tokenize(input: &str) -> Vec<Token> {
                 }
             }
             '"' => {
-                chars.next(); // Consume opening quote
+                chars.next();
                 let mut s = String::new();
                 while let Some(&ch) = chars.peek() {
-                    chars.next(); // Safely advance to next character
-                    if ch == '"' {
-                        break;
+                    chars.next();
+                    if ch == '"' { break; }
+                    if ch == '\\' {
+                        if let Some(&next_ch) = chars.peek() {
+                            chars.next();
+                            match next_ch {
+                                'n' => s.push('\n'),
+                                't' => s.push('\t'),
+                                'r' => s.push('\r'),
+                                '\\' => s.push('\\'),
+                                '"' => s.push('"'),
+                                other => { s.push('\\'); s.push(other); }
+                            }
+                            continue;
+                        }
                     }
                     s.push(ch);
                 }
@@ -140,6 +195,24 @@ pub fn tokenize(input: &str) -> Vec<Token> {
                     }
                 }
                 match ident.as_str() {
+                    "if" => tokens.push(Token::If),
+                    "else" => tokens.push(Token::Else),
+                    "while" => tokens.push(Token::While),
+                    "spawn" => tokens.push(Token::Spawn),
+                    "send" => tokens.push(Token::Send),
+                    "receive" => tokens.push(Token::Receive),
+                    "canvas" => tokens.push(Token::Canvas),
+                    "render" => tokens.push(Token::Render),
+                    "diffuse" => tokens.push(Token::Diffuse),
+                    "to" => tokens.push(Token::To),
+                    "using" => tokens.push(Token::Using),
+                    "steps" => tokens.push(Token::Steps),
+                    "guidance" => tokens.push(Token::Guidance),
+                    "noise" => tokens.push(Token::Noise),
+                    "background" => tokens.push(Token::Background),
+                    "camera" => tokens.push(Token::Camera),
+                    "shader" => tokens.push(Token::Shader),
+                    "colormap" => tokens.push(Token::Colormap),
                     "let" | "val" => tokens.push(Token::Let),
                     "fn" => tokens.push(Token::Fn),
                     "print" => tokens.push(Token::Print),
@@ -164,9 +237,7 @@ pub fn tokenize(input: &str) -> Vec<Token> {
                     _ => tokens.push(Token::Identifier(ident)),
                 }
             }
-            _ => {
-                chars.next();
-            }
+            _ => { chars.next(); }
         }
     }
     tokens.push(Token::EOF);
