@@ -1,0 +1,16 @@
+print("==================================================");
+print("     ❖ LUMINOUS DIFFUSION INFERENCE ENGINE ❖      ");
+print("==================================================");
+
+// ১. ডিফিউশন মডেল কনফিগারেশন
+diffusion_model "anime_diffusion_v1" {
+    steps: 25;
+    guidance: 8.0;
+    resolution: [768, 1024];
+}
+
+// ২. লুমিনাস জেনারেট স্টেটমেন্ট
+print("[*] Generating Authentic Anime Portrait: Naruto Uzumaki...");
+generate "masterpiece, official anime artwork, Naruto Uzumaki Sage Mode, orange cloak, dynamic lighting, ultra detailed, studio pierrot style" to "naruto_masterpiece.png";
+
+print("==================================================");

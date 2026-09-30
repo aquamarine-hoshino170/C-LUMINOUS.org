@@ -1,0 +1,19 @@
+print("==================================================");
+print("     ❖ LUMINOUS NATIVE GRAPHICS SYNTAX ENGINE ❖   ");
+print("==================================================");
+
+// ১. নেটিভ লুমিনাস ক্যানভাস ও ক্যামেরা কনফিগারেশন স্টেটমেন্ট
+canvas 800, 800 {
+    background: [5, 8, 18];
+    camera: [40.0, 32.0, 260.0];
+}
+
+// ২. ম্যাক্সওয়েল পালস ওয়েভফ্রন্ট ফিল্ড জেনারেট করা
+let sim = fdtd2d(55, 60);
+let field_energy = intensity(sim);
+
+// ৩. সরাসরি নেটিভ রেন্ডার স্টেটমেন্ট: render <source> to <target>
+print("[*] Dispatching Native 3D Rasterizer Pipeline...");
+render field_energy to "native_crystal_wave.ppm";
+
+print("==================================================");

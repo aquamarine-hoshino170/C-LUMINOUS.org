@@ -1,0 +1,12 @@
+print("=== GENERATING 3D VOLUMETRIC WAVE SURFACE MESH (.OBJ) ===");
+
+// 30x30 সাইজের ইলেকট্রোম্যাগনেটিক পালস সিমুলেট করা
+let ez_grid = fdtd2d(35, 30);
+let wave_intensity = intensity(ez_grid);
+
+print("Exporting 3D Wavefront Geometry to wave_surface.obj...");
+let status_3d = export_obj3d(wave_intensity, 15.0, "wave_surface.obj");
+print(status_3d);
+
+// সাথে একটি 2D টপ-ভিউ ছবিও সেভ করা
+export_ppm(wave_intensity, "wave_topview.ppm");

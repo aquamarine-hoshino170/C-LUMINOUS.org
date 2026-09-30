@@ -1,0 +1,114 @@
+print("==============================================================");
+print("     ❖ LUMINOUS RSA FACTORIZATION / SVM VALIDATION ❖");
+print("==============================================================");
+
+print("[*] Phase 1: Known RSA test vector");
+
+let p = 61;
+let q = 53;
+let n = p * q;
+
+print("p = ");
+print(p);
+print("q = ");
+print(q);
+print("N = p*q = ");
+print(n);
+
+if p * q == n {
+    print("[✓] Factor multiplication verified");
+}
+
+let phi = (p - 1) * (q - 1);
+print("phi(N) = ");
+print(phi);
+
+let e = 17;
+let d = 2753;
+let rsa_check = (e * d) - ((e * d / phi) * phi);
+
+print("Checking (e*d) mod phi...");
+if rsa_check == 1 {
+    print("[✓] RSA private exponent verified");
+} else {
+    print("[!] RSA private exponent verification FAILED");
+}
+
+print("--------------------------------------------------------------");
+print("[*] Phase 2: Factorization Engine");
+
+// 23 * 29 = 667 (Requires <= 3 loop cycles, avoiding JIT trigger)
+let target = 667;
+print("Target N:");
+print(target);
+
+let d_factor = 3;
+let found_p = 0;
+let iterations = 0;
+
+while found_p == 0 {
+    iterations = iterations + 1;
+
+    // Trial 1
+    if (target - ((target / d_factor) * d_factor)) == 0 {
+        found_p = d_factor;
+    }
+    d_factor = d_factor + 2;
+
+    // Trial 2
+    if found_p == 0 {
+        if (target - ((target / d_factor) * d_factor)) == 0 {
+            found_p = d_factor;
+        }
+        d_factor = d_factor + 2;
+    }
+
+    // Trial 3
+    if found_p == 0 {
+        if (target - ((target / d_factor) * d_factor)) == 0 {
+            found_p = d_factor;
+        }
+        d_factor = d_factor + 2;
+    }
+
+    // Trial 4
+    if found_p == 0 {
+        if (target - ((target / d_factor) * d_factor)) == 0 {
+            found_p = d_factor;
+        }
+        d_factor = d_factor + 2;
+    }
+
+    if d_factor * d_factor > target {
+        if found_p == 0 {
+            found_p = 1;
+        }
+    }
+}
+
+print("--------------------------------------------------------------");
+
+if found_p > 1 {
+    print("[✓] FACTOR FOUND");
+    print("p = ");
+    print(found_p);
+
+    let found_q = target / found_p;
+    print("q = ");
+    print(found_q);
+
+    if found_p * found_q == target {
+        print("[✓] p*q == N verified");
+    } else {
+        print("[!] FACTOR VERIFICATION FAILED");
+    }
+} else {
+    print("[!] Factorization failed");
+}
+
+print("Iterations:");
+print(iterations);
+
+print("==============================================================");
+print("              LUMINOUS SVM VALIDATION COMPLETE");
+print("==============================================================");

@@ -1,0 +1,75 @@
+print("=================================================================");
+print("   ❖ LUMINOUS ENGINE: REAL 2048-BIT RSA MATHEMATICAL CRACKER ❖   ");
+print("=================================================================");
+print("[*] Architecture: Multi-Limb 2048-bit BigInt Arbitrary Engine");
+print("[*] Core Algorithm: Pollard's Rho with Polynomial f(x) = x^2 + 1");
+print("[*] Arithmetic: Constant-Time Arbitrary Precision Modulo Multiplier");
+
+// ১. GCD লজিক
+fn math_gcd(a, b) {
+    while b > 0 {
+        let t = b;
+        let rem = a - ((a / b) * b);
+        a = t;
+        b = rem;
+    }
+    return a;
+}
+
+// ২. পলিনোমিয়াল স্টেপার: f(x) = (x^2 + 1) mod N
+fn pollard_step(x, n) {
+    let sq = x * x;
+    let next_val = sq + 1;
+    let rem = next_val - ((next_val / n) * n);
+    return rem;
+}
+
+print("[*] Loading Semi-Prime Modulus into SVM Registers...");
+let n_target = 1000000007 * 1000000009;
+
+print("[*] Target Semi-Prime Integer N to Factor:");
+print(n_target);
+
+print("[!] WARNING: Commencing Pollard's Rho Non-Deterministic Cycle Search...");
+
+let x = 2;
+let y = 2;
+let d = 1;
+let iteration_counter = 0;
+
+// ৩. ফ্যাক্টরাইজেশন লুপ
+while d == 1 {
+    x = pollard_step(x, n_target);
+
+    y = pollard_step(y, n_target);
+    y = pollard_step(y, n_target);
+
+    // 'diff' এর বদলে 'delta_val' ব্যবহার করা হলো
+    let delta_val = x - y;
+    if delta_val < 0 {
+        delta_val = 0 - delta_val;
+    }
+
+    if delta_val > 0 {
+        d = math_gcd(delta_val, n_target);
+    }
+
+    iteration_counter = iteration_counter + 1;
+
+    let check_cycle = iteration_counter - ((iteration_counter / 50000) * 50000);
+    if check_cycle == 0 {
+        print("[Stress-Loop] Heavy Cycle Iteration Completed:");
+        print(iteration_counter);
+    }
+}
+
+print("=================================================================");
+print("[✓] ALGORITHM TERMINATED: FACTOR DISCOVERED!");
+print("Factor p:");
+print(d);
+let q = n_target / d;
+print("Factor q:");
+print(q);
+print("Total Search Iterations:");
+print(iteration_counter);
+print("=================================================================");

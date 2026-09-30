@@ -1,0 +1,33 @@
+print("==================================================");
+print("   ❖ LUMINOUS ANIME ENGINE: NARUTO RASENGAN ❖    ");
+print("==================================================");
+
+// ১. ক্যানভাস কনফিগারেশন: কোনোহা ডিপ-নাইট ব্ল্যাকগ্রাউন্ড
+canvas 800, 800 {
+    background: [4, 8, 22];
+    camera: [38.0, 45.0, 280.0];
+    colormap: "coolwarm";
+}
+
+// ২. সায়েন্টিফিক কোর: স্পাইরাল চক্র ফিল্ড ও অপটিক্যাল ভর্টেক্স সিমুলেশন
+// রাসেঙ্গানের ঘূর্ণায়মান প্লাজমা ওয়েভফ্রন্ট (Wave Vortex)
+print("[*] Charging Naruto Chakra: Spiral Vortex Field Simulation...");
+let chakra_grid = fdtd2d(65, 60);
+
+// ৩. ডিফ্র্যাকশন প্রপাগেশন দিয়ে চক্র শক্তির বিস্ফোরণ (Chakra Wave Propagation)
+print("[*] Propagating Rasengan Plasma Field via Optical Wavefront...");
+let chakra_wave = propagate2d(chakra_grid, 1.2, 0.632, 0.05);
+
+// ৪. ইনটেনসিটি ও এনার্জি ডেনসিটি এক্সট্রাক্ট করা
+let rasengan_energy = intensity(chakra_wave);
+
+// ৫.১ ৩D সলিড ক্রিস্টাল রেন্ডার (রাসেঙ্গানের ত্রিমাত্রিক প্লাজমা বল)
+print("[*] Rendering 3D Rasengan Sphere to rasengan_3d.ppm...");
+render rasengan_energy using coolwarm to "naruto_rasengan.ppm";
+
+// ৫.২ নিনজা হেডব্যান্ড ভেক্টর আর্ট (Vector PostScript)
+print("[*] Exporting Vector Ninja Crest to naruto_crest.eps...");
+render rasengan_energy using plasma to "naruto_crest.eps";
+
+print("[✓] Rasengan Chakra Synthesis Complete!");
+print("==================================================");

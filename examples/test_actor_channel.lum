@@ -1,0 +1,32 @@
+print("==================================================");
+print("  ❖ LUMINOUS SVM: BIDIRECTIONAL ACTOR CHANNEL ❖   ");
+print("==================================================");
+
+print("[*] Main Thread: Spawning Worker Actor...");
+
+spawn {
+    print("[Worker Actor] Computing Maxwell Wave Simulation...");
+    let wave = fdtd2d(50, 48);
+    let energy = intensity(wave);
+    
+    // গণনাকৃত ফলাফল মেইন থ্রেডে পাঠিয়ে দেওয়া
+    let result_code = 999;
+    print("[Worker Actor] Computation Finished. Sending message to channel...");
+    send result_code;
+}
+
+print("[*] Main Thread: Performing independent tasks...");
+let sum = 50 + 50;
+print(sum);
+
+print("[*] Main Thread: Waiting to receive message from Actor channel (Non-locking)...");
+let received_msg = receive;
+
+print("[*] Main Thread: Message Received successfully from Actor!");
+print(received_msg);
+
+if received_msg == 999 {
+    print("[✓] Verification: Bidirectional Actor Communication 100% SUCCESS!");
+}
+
+print("==================================================");

@@ -1,0 +1,9 @@
+print("=== GENERATING GENUINE 3D TOPOGRAPHIC WAVE SURFACE ===");
+
+// তরঙ্গ বিস্তার সিমুলেশন
+let ez_grid = fdtd2d(40, 32);
+let wave_intensity = intensity(ez_grid);
+
+// সরাসরি ম্যাথমেটিক্যাল 3D ওয়্যারফ্রেম প্রজেকশন তৈরি
+let status = export_ppm(wave_intensity, "real_3d_wave.ppm");
+print(status);

@@ -1,0 +1,32 @@
+print("==================================================");
+print("     ❖ LUMINOUS SVM: FUNCTION & CALL-STACK ❖      ");
+print("==================================================");
+
+// ১. মাল্টি-প্যারামিটার সায়েন্টিফিক ক্যালকুলেশন ফাংশন
+fn compute_energy(frequency, mass) {
+    let base = frequency * 2;
+    let total = base + mass;
+    return total;
+}
+
+// ২. সাধারণ স্কেলিং ফাংশন
+fn scale(val) {
+    let factor = 10;
+    return val * factor;
+}
+
+print("[*] Calling User Function: compute_energy(15, 20)...");
+let e = compute_energy(15, 20);
+print("Computed Base Energy:");
+print(e);
+
+print("[*] Calling Nested Function: scale(e)...");
+let scaled_e = scale(e);
+print("Scaled Final Energy Result:");
+print(scaled_e);
+
+if scaled_e == 500 {
+    print("[✓] Verification: Function Stack Frame 100% SUCCESS!");
+}
+
+print("==================================================");

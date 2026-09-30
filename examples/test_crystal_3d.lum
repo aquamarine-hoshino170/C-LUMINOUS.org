@@ -1,0 +1,9 @@
+print("=== GENERATING HYPER-REALISTIC 3D SOLID CRYSTAL SURFACE ===");
+
+// 64x64 হাই-ডেনসিটি গ্রিডে 60 স্টেপ সিমুলেশন
+let sim_field = fdtd2d(60, 64);
+let wave_energy = intensity(sim_field);
+
+print("Rendering 3D Solid Surface with Z-Buffering and Phong Light Normal...");
+let status = export_ppm(wave_energy, "crystal_3d_wave.ppm");
+print(status);

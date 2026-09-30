@@ -1,0 +1,24 @@
+print("=== LUMINOUS SCIENTIFIC IMAGE GENERATION CORE ===");
+
+// ১. একটি ২ডি অপটিক্যাল ইনটেনসিটি প্যাটার্ন তৈরি
+let optical_grid = [
+    [0.1, 0.2, 0.5, 0.8, 1.0],
+    [0.2, 0.4, 0.8, 1.0, 0.8],
+    [0.5, 0.8, 1.0, 0.8, 0.5],
+    [0.8, 1.0, 0.8, 0.4, 0.2],
+    [1.0, 0.8, 0.5, 0.2, 0.1]
+];
+
+print("Generating optical field gradient image...");
+let status1 = export_ppm(optical_grid, "optical_wave.ppm");
+print(status1);
+
+// ২. 2D FDTD ম্যাক্সওয়েল ইলেকট্রিক ফিল্ড থেকে ইমেজ এক্সপোর্ট
+print("\nRunning 2D FDTD Simulation to generate electromagnetic field snapshot...");
+let ez_grid = fdtd2d(20, 9);
+let ez_power = intensity(ez_grid);
+
+print("Exporting FDTD Wavefront snapshot to PPM format...");
+let status2 = export_ppm(ez_power, "fdtd_wavefront.ppm");
+print(status2);
+print("Done! Both images successfully synthesized.");

@@ -1,0 +1,25 @@
+print("==================================================");
+print("     ❖ LUMINOUS SVM: CONCURRENT ACTOR CORE ❖     ");
+print("==================================================");
+
+print("[*] Main Thread: Initiating Parallel Maxwell Simulation Actor...");
+
+spawn {
+    print("[Worker Actor] Background Simulation Started!");
+    let async_wave = fdtd2d(50, 48);
+    let async_energy = intensity(async_wave);
+    render async_energy using viridis to "actor_parallel_wave.ppm";
+    print("[Worker Actor] Wave Render Complete -> 'actor_parallel_wave.ppm'");
+}
+
+print("[*] Main Thread: Doing Local Matrix Math without Blocking:");
+let counter = 1;
+let local_sum = 0;
+while counter <= 5 {
+    local_sum = local_sum + (counter * 10);
+    print(local_sum);
+    counter = counter + 1;
+}
+
+print("[*] Main Thread: Completed all synchronous tasks instantly.");
+print("==================================================");

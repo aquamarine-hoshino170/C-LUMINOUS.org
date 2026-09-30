@@ -1,0 +1,20 @@
+print("==================================================");
+print("     ❖ LUMINOUS HIGH-SPEED REGISTER VM ❖          ");
+print("==================================================");
+
+let a = 120;
+let b = 45;
+let sum = a + b;
+print("Register Arithmetic Test (120 + 45):");
+print(sum);
+
+print("[*] Running Maxwell FDTD Wave Simulation inside VM Registers...");
+let sim = fdtd2d(50, 48);
+
+print("[*] Computing Wave Intensity in Continuous Buffer...");
+let energy = intensity(sim);
+
+print("[*] Dispatching VM High-Speed Surface Renderer...");
+render energy using viridis to "vm_wave_surface.ppm";
+
+print("==================================================");

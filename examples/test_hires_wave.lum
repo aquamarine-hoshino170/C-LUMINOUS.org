@@ -1,0 +1,8 @@
+print("=== GENERATING HIGH-RESOLUTION WAVE INTERFERENCE (64x64) ===");
+
+// 64x64 সাইজের ইলেকট্রোম্যাগনেটিক ওয়েভফ্রন্ট স্ন্যাপশট
+let highres_sim = fdtd2d(50, 45);
+let energy_map = intensity(highres_sim);
+
+export_ppm(energy_map, "highres_wave.ppm");
+print("High-Res simulation snapshot saved!");

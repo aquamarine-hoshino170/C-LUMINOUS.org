@@ -1,0 +1,14 @@
+print("==================================================");
+print("   ❖ LUMINOUS NATIVE VECTOR: NARUTO UZUMAKI ❖     ");
+print("==================================================");
+
+// ১. অফলাইন লোকাল প্রসিডিউরাল আর্ট কনফিগারেশন
+diffusion_model "luminous_native_core" {
+    resolution: [768, 1024];
+}
+
+// ২. কোনো এক্সটার্নাল এপিআই ছাড়া পিওর মেমোরি জেনারেশন
+print("[*] Synthesizing Naruto Sage Mode Portrait (100% Offline)...");
+generate "Naruto Uzumaki, sage mode, golden spiky hair, rasengan core, orange cloak" to "pure_naruto.png";
+
+print("==================================================");

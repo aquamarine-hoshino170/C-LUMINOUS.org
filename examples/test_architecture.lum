@@ -1,0 +1,32 @@
+print("==================================================");
+print("     ❖ LUMINOUS MULTI-PIPELINE ARCHITECTURE ❖     ");
+print("==================================================");
+
+// ১. ক্যানভাস কনফিগারেশন
+canvas 800, 800 {
+    background: [5, 8, 16];
+    camera: [42.0, 35.0, 250.0];
+    colormap: "viridis";
+}
+
+// ২. সায়েন্টিফিক কোর থেকে ওয়েভফিল্ড তৈরি
+let wave = fdtd2d(55, 60);
+let power = intensity(wave);
+
+// ৩.১ গ্রাফিক্স আইআর: Viridis প্যালেটে ৩D PPM এক্সপোর্ট
+print("[*] Generating 3D Surface with Viridis Colormap...");
+render power using viridis to "wave_viridis.ppm";
+
+// ৩.২ গ্রাফিক্স আইআর: Plasma প্যালেটে ৩D PPM এক্সপোর্ট
+print("[*] Generating 3D Surface with Plasma Colormap...");
+render power using plasma to "wave_plasma.ppm";
+
+// ৩.৩ ব্যাকএন্ড টার্গেট: Wavefront 3D OBJ এক্সপোর্ট
+print("[*] Exporting 3D Mesh to OBJ...");
+render power to "wave_mesh.obj";
+
+// ৩.৪ ব্যাকএন্ড টার্গেট: PostScript EPS এক্সপোর্ট
+print("[*] Exporting Vector Graphics to EPS...");
+render power using coolwarm to "wave_vector.eps";
+
+print("==================================================");

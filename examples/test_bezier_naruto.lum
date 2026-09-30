@@ -1,0 +1,14 @@
+print("==================================================");
+print("   ❖ LUMINOUS HIGH-PRECISION BÉZIER VECTOR ART ❖  ");
+print("==================================================");
+
+// ১. ভেক্টর ইঞ্জিন রেজোলিউশন কনফিগারেশন
+diffusion_model "luminous_bezier_v1" {
+    resolution: [800, 1000];
+}
+
+// ২. খাঁটি গাণিতিক বেজিয়ার কার্ভ ও সেল-শেডিং পোর্ট্রেট রেন্ডার
+print("[*] Generating Sharp Anime Contours & Cel-Shaded Naruto...");
+generate "Naruto Uzumaki, sage mode, bezier sharp jawline, layered golden hair, konoha crest" to "naruto_bezier.png";
+
+print("==================================================");

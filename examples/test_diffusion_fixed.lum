@@ -1,0 +1,11 @@
+print("==================================================");
+print("     ❖ LUMINOUS GEN-AI: FIXED DIFFUSION CORE ❖    ");
+print("==================================================");
+
+canvas 768, 1024 {
+    background: [10, 14, 26];
+}
+
+diffuse "Naruto Uzumaki Sage Mode" steps 50 guidance 6.0 to "naruto_diffused.png";
+
+print("==================================================");

@@ -1,0 +1,25 @@
+print("==================================================");
+print("     ❖ LUMINOUS VM LOOP & BRANCHING TEST ❖        ");
+print("==================================================");
+
+let counter = 1;
+let accumulator = 0;
+
+print("[*] Running Bytecode While-Loop (Sum 1 to 5):");
+while counter <= 5 {
+    print(counter);
+    accumulator = accumulator + counter;
+    counter = counter + 1;
+}
+
+print("Final Accumulated Value:");
+print(accumulator);
+
+print("[*] Testing Conditional Branching:");
+if accumulator > 10 {
+    print("SUCCESS: Accumulator exceeded threshold!");
+} else {
+    print("FAILED: Accumulator under threshold!");
+}
+
+print("==================================================");
