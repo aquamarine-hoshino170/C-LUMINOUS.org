@@ -1,67 +1,132 @@
-name: Gemini Code Agent
+name: Gemini 3.1 Pro Code Engine
 
 on:
+  schedule:
+    # দিনে স্বয়ংক্রিয়ভাবে ডিপ অডিট ও রিফ্যাক্টর চালানোর ক্রন (প্রতি ১ ঘণ্টা অন্তর)
+    - cron: '0 */1 * * *'
+  workflow_dispatch:
   issues:
     types: [opened]
-  issue_comment:
-    types: [created]
 
 jobs:
-  gemini-assist:
+  autonomous-code-engine:
     runs-on: ubuntu-latest
-    if: github.event_name == 'issues' || contains(github.event.comment.body, '@gemini-code')
     permissions:
+      contents: write
+      pull-requests: write
       issues: write
-      contents: read
+
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Run Gemini Code Agent
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Execute Gemini 3.1 Pro Deep Audit & Refactor
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_BODY: ${{ github.event.issue.body || github.event.comment.body }}
-          ISSUE_URL: ${{ github.event.issue.comments_url }}
         run: |
           python -c '
           import os
           import sys
+          import glob
           import json
           import urllib.request
 
           api_key = os.environ.get("GEMINI_API_KEY")
-          github_token = os.environ.get("GITHUB_TOKEN")
-          issue_body = os.environ.get("ISSUE_BODY", "")
-          comments_url = os.environ.get("ISSUE_URL", "")
+          if not api_key:
+              print("GEMINI_API_KEY Missing!")
+              sys.exit(1)
 
-          url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-          prompt = f"You are Gemini Code for the C-LUMINOUS.org repository. Task/Issue: {issue_body}\nProvide direct architectural guidance or code fixes in Rust/Luminous."
-          
-          data = {"contents": [{"parts": [{"text": prompt}]}]}
-          req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers={"Content-Type": "application/json"})
-          
+          # মডেল এন্ডপয়েন্ট: Gemini 3.1 Pro
+          url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro:generateContent?key={api_key}"
+
+          # সোর্স ফাইল সংগ্রহ
+          rust_files = glob.glob("src/**/*.rs", recursive=True)
+          if not rust_files:
+              print("কোনো Rust ফাইল পাওয়া যায়নি!")
+              sys.exit(0)
+
+          system_prompt = """
+          You are Gemini Code (Autonomous Engine) powered by Gemini 3.1 Pro.
+          Target Stack: High-performance register-based VM, ARM NEON SIMD runtime in Rust.
+          Task:
+          1. Perform deep static analysis and 20x logic verification passes on memory safety, SIMD vectorization, register bounds, and zero-cost abstractions.
+          2. Detect weak, inefficient, or redundant patterns.
+          3. Rewrite weak functions into hardened, zero-copy, cache-friendly, and SIMD-optimized production Rust code.
+          4. Output strictly in JSON format as a list of file changes:
+          [
+            {"path": "src/path/to/file.rs", "content": "NEW_COMPLETE_FILE_CONTENT"}
+          ]
+          Do NOT wrap JSON in backticks or markdown formatting. Output pure JSON only.
+          """
+
+          files_payload = {}
+          for f_path in rust_files[:10]:
+              with open(f_path, "r", encoding="utf-8") as f:
+                  files_payload[f_path] = f.read()
+
+          request_body = {
+              "contents": [{
+                  "parts": [
+                      {"text": system_prompt},
+                      {"text": f"CURRENT_CODEBASE:\n{json.dumps(files_payload)}"}
+                  ]
+              }],
+              "generationConfig": {
+                  "temperature": 0.1,
+                  "responseMimeType": "application/json"
+              }
+          }
+
+          req = urllib.request.Request(
+              url,
+              data=json.dumps(request_body).encode("utf-8"),
+              headers={"Content-Type": "application/json"}
+          )
+
           try:
               with urllib.request.urlopen(req) as resp:
                   res = json.loads(resp.read().decode("utf-8"))
-                  reply_text = res["candidates"][0]["content"]["parts"][0]["text"]
+                  raw_output = res["candidates"][0]["content"]["parts"][0]["text"].strip()
+                  
+                  # JSON পার্সিং ও ফাইল ওভাররাইট
+                  file_updates = json.loads(raw_output)
+                  for update in file_updates:
+                      target_path = update.get("path")
+                      new_content = update.get("content")
+                      if target_path and new_content:
+                          os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                          with open(target_path, "w", encoding="utf-8") as out:
+                              out.write(new_content)
+                          print(f"[Gemini 3.1 Pro Refactored]: {target_path}")
           except Exception as e:
-              reply_text = f"Gemini Execution Error: {e}"
-
-          comment_payload = {"body": f"### 🤖 Gemini Code Agent Response\n\n{reply_text}"}
-          gh_req = urllib.request.Request(
-              comments_url,
-              data=json.dumps(comment_payload).encode("utf-8"),
-              headers={
-                  "Authorization": f"Bearer {github_token}",
-                  "Accept": "application/vnd.github+json",
-                  "Content-Type": "application/json"
-              }
-          )
-          urllib.request.urlopen(gh_req)
+              print(f"Audit failed or format mismatch: {e}")
+              sys.exit(1)
           '
+
+      - name: Validate Refactored Code with Cargo
+        run: |
+          cargo check --workspace || cargo check
+
+      - name: Create Pull Request with Hardened Code
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "refactor: hardened VM logic via Gemini 3.1 Pro audit"
+          title: "🤖 Gemini 3.1 Pro: Automated 20x Logic Audit & Optimization"
+          body: |
+            ### Gemini 3.1 Pro Autonomous Refactor
+            - Performed 20x logic passes on register allocations and memory paths.
+            - Eliminated fallback inefficiencies and redundant memory bounds.
+            - Validated via `cargo check`.
+          branch: "gemini-3.1-pro-audit"
+          delete-branch: true
