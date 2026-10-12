@@ -1,9 +1,10 @@
 ---
 name: Bug report
 about: Report a reproducible problem in C-LUMINOUS
-title: ""
+title: ''
 labels: bug
-assignees: ""
+assignees: ''
+
 ---
 
 ## Summary
