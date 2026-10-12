@@ -1,0 +1,9 @@
+let counter = 1;
+let accumulator = 0;
+
+while counter <= 10000000 {
+    accumulator = accumulator + counter;
+    counter = counter + 3;
+}
+
+print(accumulator);

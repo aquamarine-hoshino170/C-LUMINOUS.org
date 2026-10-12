@@ -1,0 +1,154 @@
+use crate::bytecode::{Chunk, OpCode};
+use crate::runtime::Value;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum StepSpec {
+    Constant(i64),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum LimitSpec {
+    Constant(i64),
+    Register(u8),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LoopSpec {
+    pub loop_start_ip: usize,
+    pub loop_end_ip: usize,
+    pub counter_reg: u8,
+    pub accum_reg: u8,
+    pub limit: LimitSpec,
+    pub step: StepSpec,
+}
+
+pub struct LoopInspector;
+
+impl LoopInspector {
+    /// vm.rs-এর সাথে সামঞ্জস্য রেখে inspect ফাংশন (loop_start এবং loop_end_jmp সহ)
+    pub fn inspect(chunk: &Chunk, loop_start: usize, loop_end_jmp: usize) -> Option<LoopSpec> {
+        let code = &chunk.code;
+
+        if loop_start >= code.len() || loop_end_jmp >= code.len() || loop_start > loop_end_jmp {
+            return None;
+        }
+
+        let loop_slice = &code[loop_start..=loop_end_jmp];
+
+        // ১. সেফটি গেট: কোনো সাইড-ইফেক্ট থাকলে সোজা রিজেক্ট (ইন্টারপ্রিটার হ্যান্ডেল করবে)
+        for op in loop_slice {
+            match op {
+                OpCode::Print { .. }
+                | OpCode::Call { .. }
+                | OpCode::SpawnActor { .. }
+                | OpCode::SendMsg { .. }
+                | OpCode::RecvMsg { .. }
+                | OpCode::Halt => return None,
+                _ => {}
+            }
+        }
+
+        // ২. হেডার স্ট্রাকচার ভেরিফিকেশন (MOV, LOAD_CONST, LESS_EQUAL, JMP_IF_FALSE)
+        if loop_slice.len() < 5 {
+            return None;
+        }
+
+        let (counter_reg, limit_spec, loop_end_ip) = match (&loop_slice[0], &loop_slice[1], &loop_slice[2], &loop_slice[3]) {
+            (
+                OpCode::Mov { dst: r_temp, src: r_counter },
+                OpCode::LoadConst { dst: r_lim, const_idx },
+                OpCode::LessEqual { dst: r_cond, lhs, rhs },
+                OpCode::JmpIfFalse { cond, offset },
+            ) => {
+                if r_cond != cond || lhs != r_temp || rhs != r_lim {
+                    return None;
+                }
+                let limit_val = match &chunk.constants[*const_idx] {
+                    Value::Int(v) => *v,
+                    _ => return None,
+                };
+                (*r_counter, LimitSpec::Constant(limit_val), *offset)
+            }
+            _ => return None,
+        };
+
+        // ৩. বডি অ্যানালাইসিস: accumulator ও counter আপডেট
+        let mut recognized_accum = None;
+        let mut recognized_step = None;
+
+        let body_slice = &loop_slice[4..loop_slice.len() - 1];
+        let mut i = 0;
+        while i < body_slice.len() {
+            // accum = accum + counter
+            if i + 3 < body_slice.len() {
+                if let (
+                    OpCode::Mov { dst: ra, src: s_accum },
+                    OpCode::Mov { dst: rc, src: s_cnt },
+                    OpCode::Add { dst: r_res, lhs, rhs },
+                    OpCode::Mov { dst: final_accum, src: res_src },
+                ) = (&body_slice[i], &body_slice[i + 1], &body_slice[i + 2], &body_slice[i + 3]) {
+                    if lhs == ra && rhs == rc && res_src == r_res && final_accum == s_accum && *s_cnt == counter_reg {
+                        recognized_accum = Some(*final_accum);
+                        i += 4;
+                        continue;
+                    }
+                }
+            }
+
+            // counter = counter + step
+            if i + 3 < body_slice.len() {
+                if let (
+                    OpCode::Mov { dst: rc, src: s_cnt },
+                    OpCode::LoadConst { dst: r_step, const_idx },
+                    OpCode::Add { dst: r_res, lhs, rhs },
+                    OpCode::Mov { dst: final_cnt, src: res_src },
+                ) = (&body_slice[i], &body_slice[i + 1], &body_slice[i + 2], &body_slice[i + 3]) {
+                    if lhs == rc && rhs == r_step && res_src == r_res && final_cnt == s_cnt && *s_cnt == counter_reg {
+                        let step_val = match &chunk.constants[*const_idx] {
+                            Value::Int(v) => *v,
+                            _ => return None,
+                        };
+                        recognized_step = Some(StepSpec::Constant(step_val));
+                        i += 4;
+                        continue;
+                    }
+                }
+            }
+
+            i += 1;
+        }
+
+        let accum_reg = recognized_accum?;
+        let step = recognized_step?;
+
+        Some(LoopSpec {
+            loop_start_ip: loop_start,
+            loop_end_ip,
+            counter_reg,
+            accum_reg,
+            limit: limit_spec,
+            step,
+        })
+    }
+
+    /// পুরো চাঙ্ক স্ক্যান করে স্বয়ংক্রিয়ভাবে ব্যাকওয়ার্ড জাম্প ডিটেক্ট করে inspect করা (টেস্টের সুবিধার জন্য)
+    pub fn inspect_chunk(chunk: &Chunk) -> Option<LoopSpec> {
+        for (idx, op) in chunk.code.iter().enumerate() {
+            if let OpCode::Jmp { offset } = op {
+                if *offset < idx {
+                    return Self::inspect(chunk, *offset, idx);
+                }
+            }
+        }
+        None
+    }
+}
+
+pub struct DynamicJit;
+
+impl DynamicJit {
+    /// Emitter কানেক্ট হওয়ার আগ পর্যন্ত প্লেসহোল্ডার / সেফ ফলব্যাক
+    pub fn compile_loop(_spec: &LoopSpec) -> Result<crate::jit::ExecutableBuffer, String> {
+        Err("Dynamic ARMv7 JIT emitter currently under construction".into())
+    }
+}

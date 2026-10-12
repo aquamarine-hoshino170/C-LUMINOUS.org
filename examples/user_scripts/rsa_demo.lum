@@ -1,0 +1,39 @@
+print("==================================================")
+print("       ❖ Luminous RSA Factoring Demo ❖            ")
+print("==================================================")
+
+# 1. RSA Modulus N to factorize
+n = 3233.0
+
+# Initial values
+d = 2.0
+p = 1.0
+q = 1.0
+
+# 2. Trial Division Factorization Routine
+print("Analyzing public modulus n = 3233.0 ...")
+
+while (d * d) <= n {
+    rem = n % d
+    if rem == 0.0 {
+        p = d
+        q = n / d
+        # Condition met, break manually by jumping condition
+        d = n
+    }
+    if rem != 0.0 {
+        d = d + 1.0
+    }
+}
+
+print("Found Prime Factor P:")
+print(p)
+
+print("Found Prime Factor Q:")
+print(q)
+
+# 3. Calculate Euler's Totient Function (Phi)
+phi = (p - 1.0) * (q - 1.0)
+print("Calculated Euler Totient Phi(n):")
+print(phi)
+

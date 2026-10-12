@@ -1,0 +1,3 @@
+# Luminous Language Test with 'today' & 'is'
+today x is 42;
+print(x);

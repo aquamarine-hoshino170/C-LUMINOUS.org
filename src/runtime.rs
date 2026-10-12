@@ -115,13 +115,14 @@ impl Environment {
 
     pub fn resolve_module_path(&self, requested: &str) -> Result<PathBuf, String> {
         let candidate = self.base_dir.join(requested);
-        let canonical = candidate.canonicalize().map_err(|e| {
-            format!("LUM-M3001: Cannot resolve path '{}': {}", requested, e)
-        })?;
+        let canonical = candidate
+            .canonicalize()
+            .map_err(|e| format!("LUM-M3001: Cannot resolve path '{}': {}", requested, e))?;
 
-        let canonical_base = self.base_dir.canonicalize().map_err(|e| {
-            format!("LUM-M3002: Base directory error: {}", e)
-        })?;
+        let canonical_base = self
+            .base_dir
+            .canonicalize()
+            .map_err(|e| format!("LUM-M3002: Base directory error: {}", e))?;
 
         if !canonical.starts_with(&canonical_base) {
             return Err(format!(

@@ -4,13 +4,15 @@ version = "0.2.0"
 edition = "2021"
 
 [dependencies]
-libloading = "0.8"
-
-# Candle ML Framework for Native Rust Diffusion
-candle-core = { version = "0.8" }
-candle-transformers = { version = "0.8" }
-candle-nn = { version = "0.8" }
-tokenizers = { version = "0.21", default-features = false, features = ["fancy-regex"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+memmap2 = "0.9"
 libc = "0.2"
+
+[lib]
+name = "lum_rust"
+path = "src/lib.rs"
+crate-type = ["rlib"]
+
+
+[features]
+default = []
+cxx = []

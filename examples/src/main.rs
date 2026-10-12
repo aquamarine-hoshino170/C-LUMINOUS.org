@@ -1,7 +1,7 @@
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex, mpsc};
-use std::fs;
 use std::env;
+use std::fs;
+use std::sync::{mpsc, Arc, Mutex};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Value {
@@ -32,7 +32,10 @@ impl Value {
                 format!("[{}]", items.join(", "))
             }
             Value::Map(m) => {
-                let items: Vec<String> = m.iter().map(|(k, v)| format!("{}: {}", k, v.to_string_repr())).collect();
+                let items: Vec<String> = m
+                    .iter()
+                    .map(|(k, v)| format!("{}: {}", k, v.to_string_repr()))
+                    .collect();
                 format!("{{{}}}", items.join(", "))
             }
             Value::Channel(_) => "<channel>".to_string(),
@@ -148,8 +151,14 @@ fn execute_block(lines: &[String], env: &mut HashMap<String, Value>) -> Result<(
                 };
 
                 if let Some((start_s, end_s)) = range_clean.split_once(" to ") {
-                    let start = eval_expression(start_s.trim(), env).to_string_repr().parse::<i64>().unwrap_or(0);
-                    let end = eval_expression(end_s.trim(), env).to_string_repr().parse::<i64>().unwrap_or(0);
+                    let start = eval_expression(start_s.trim(), env)
+                        .to_string_repr()
+                        .parse::<i64>()
+                        .unwrap_or(0);
+                    let end = eval_expression(end_s.trim(), env)
+                        .to_string_repr()
+                        .parse::<i64>()
+                        .unwrap_or(0);
 
                     let mut cur = start;
                     while cur <= end {

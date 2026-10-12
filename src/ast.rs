@@ -6,7 +6,10 @@ pub enum Expr {
     Imaginary(f64),
     Str(String),
     Variable(String),
-    Call { name: String, args: Vec<Expr> },
+    Call {
+        name: String,
+        args: Vec<Expr>,
+    },
     Array(Vec<Expr>),
     Conj(Box<Expr>),
     Intensity(Box<Expr>),
@@ -73,7 +76,11 @@ pub enum BinaryOp {
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
-    FnDef { name: String, params: Vec<String>, body: Box<Stmt> },
+    FnDef {
+        name: String,
+        params: Vec<String>,
+        body: Box<Stmt>,
+    },
     Return(Option<Expr>),
     Let(String, Expr),
     Assign(String, Expr),

@@ -1,0 +1,15 @@
+print("=== LUMINOUS PHASE 1 ARRAY TEST ===")
+
+let numbers = [10, 20, 30]
+print(numbers)
+
+let nested = [[1, 2], [3, 4]]
+print(nested)
+
+let empty = []
+print(empty)
+
+let mixed = [10, 20 + 30, 5 * 6]
+print(mixed)
+
+print("ARRAY BYTECODE TEST COMPLETE")

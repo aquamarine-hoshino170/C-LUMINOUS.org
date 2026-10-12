@@ -1,0 +1,101 @@
+print("==================================================");
+print("   ❖ LUMINOUS CRYPTANALYSIS: TOY RSA FACTORING ❖   ");
+print("==================================================");
+
+// ১. মডুলার ইনভার্স গণনা (Extended Euclidean Algorithm)
+// e * d ≡ 1 (mod phi)
+fn mod_inverse(e, phi) {
+    let t0 = 0;
+    let t1 = 1;
+    let r0 = phi;
+    let r1 = e;
+
+    while r1 > 0 {
+        let q = r0 / r1;
+        
+        let temp_r = r0 - (q * r1);
+        r0 = r1;
+        r1 = temp_r;
+
+        let temp_t = t0 - (q * t1);
+        t0 = t1;
+        t1 = temp_t;
+    }
+
+    if t0 < 0 {
+        t0 = t0 + phi;
+    }
+    return t0;
+}
+
+// ২. সেমি-প্রাইম N ফ্যাক্টরাইজেশন (Fermat's Difference of Squares: N = a^2 - b^2)
+// প্রযোজ্য যখন p এবং q কাছাকাছি প্রাইম
+fn factor_semiprime(n) {
+    // a = ceil(sqrt(n)) অনুমান
+    let a = 1;
+    while (a * a) < n {
+        a = a + 1;
+    }
+
+    let b2 = (a * a) - n;
+    let b = 0;
+    let found = 0;
+
+    while found == 0 {
+        // পারফেক্ট স্কয়ার টেস্ট
+        b = 0;
+        while (b * b) < b2 {
+            b = b + 1;
+        }
+
+        if (b * b) == b2 {
+            found = 1;
+        } else {
+            a = a + 1;
+            b2 = (a * a) - n;
+        }
+    }
+
+    // p = a - b, q = a + b
+    let p = a - b;
+    return p;
+}
+
+// ৩. টয় আরএসএ পাবলিক কী ইনপুট
+// N = 3233 (61 * 53), e = 17
+let n = 3233;
+let e = 17;
+
+print("[*] Target Public Key Modulus (N):");
+print(n);
+print("[*] Target Public Exponent (e):");
+print(e);
+
+// ৪. ফ্যাক্টরাইজেশন এক্সিকিউট করে p ও q নির্ণয়
+let p = factor_semiprime(n);
+let q = n / p;
+
+print("[*] Successfully Factored Modulus:");
+print("Factor p:");
+print(p);
+print("Factor q:");
+print(q);
+
+// ৫. অয়লার টোশেন্ট (Euler's Totient) phi(n) গণনা
+// phi = (p - 1) * (q - 1)
+let phi = (p - 1) * (q - 1);
+print("[*] Computed Euler's Totient phi(N):");
+print(phi);
+
+// ৬. প্রাইভেট কী ডিক্রিপশন এক্সপোনেন্ট (d) নির্ণয়
+let d = mod_inverse(e, phi);
+
+print("[*] Recovered RSA Private Exponent (d):");
+print(d);
+
+// ভেরিফিকেশন: (17 * 2753) mod 3120 = 46801 mod 3120 = 1
+let check = (e * d) - ((e * d / phi) * phi);
+if check == 1 {
+    print("[✓] Cryptanalysis Complete: Private Key d mathematically verified!");
+}
+print("==================================================");

@@ -1,9 +1,9 @@
-pub mod jit_emitter;
-mod jit;
 mod ast;
 mod bytecode;
 mod compiler;
 mod evaluator;
+mod jit;
+pub mod jit_emitter;
 mod lexer;
 mod parser;
 mod runtime;
@@ -35,7 +35,10 @@ fn main() {
 
     // If target is directly a precompiled .lbc binary
     if input_path.ends_with(".lbc") {
-        println!("[*] Loading Precompiled Binary Bytecode: '{}'...", input_path);
+        println!(
+            "[*] Loading Precompiled Binary Bytecode: '{}'...",
+            input_path
+        );
         let chunk = match bytecode::Chunk::load_from_file(input_path) {
             Ok(c) => c,
             Err(e) => {
@@ -90,7 +93,10 @@ fn main() {
     };
 
     // Flag: --disasm
-    if args.iter().any(|arg| arg == "--disasm" || arg == "--dump-bytecode") {
+    if args
+        .iter()
+        .any(|arg| arg == "--disasm" || arg == "--dump-bytecode")
+    {
         let name = Path::new(input_path).file_name().unwrap().to_str().unwrap();
         chunk.disassemble(name);
         return;
@@ -104,7 +110,10 @@ fn main() {
                 eprintln!("Serialization Error: {}", e);
                 process::exit(1);
             }
-            println!("[✓] Successfully compiled and serialized bytecode to '{}'", out_lbc);
+            println!(
+                "[✓] Successfully compiled and serialized bytecode to '{}'",
+                out_lbc
+            );
             return;
         } else {
             eprintln!("Error: -c requires output path (e.g. -c out.lbc)");

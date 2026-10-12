@@ -45,7 +45,12 @@ fn execute_stmt(
     canvas: &mut CanvasConfig,
 ) -> Result<(), String> {
     match stmt {
-        Stmt::DiffusePipeline { prompt, steps, guidance, target_path } => {
+        Stmt::DiffusePipeline {
+            prompt,
+            steps,
+            guidance,
+            target_path,
+        } => {
             let p_val = eval_expr(prompt, env)?;
             let s_val = eval_int(&eval_expr(steps, env)?)? as usize;
             let g_val = eval_float(&eval_expr(guidance, env)?)?;
@@ -63,13 +68,23 @@ fn execute_stmt(
             println!("  ❖ LUMINOUS LANGEVIN STOCHASTIC DIFFUSION CORE ❖ ");
             println!("==================================================");
             println!("[*] Conditioning Prompt: \"{}\"", prompt_str);
-            println!("[*] Initializing Latent Space: {}x{}", canvas.width, canvas.height);
-            println!("[*] Sampling Algorithm: DDIM / Score Matching ({} Steps, Guidance: {:.1})", s_val, g_val);
+            println!(
+                "[*] Initializing Latent Space: {}x{}",
+                canvas.width, canvas.height
+            );
+            println!(
+                "[*] Sampling Algorithm: DDIM / Score Matching ({} Steps, Guidance: {:.1})",
+                s_val, g_val
+            );
 
             execute_langevin_diffusion(&prompt_str, s_val, g_val, &path_str, canvas)?;
             println!("[✓] Reverse Diffusion Process Completed: '{}'", path_str);
         }
-        Stmt::CanvasDef { width, height, properties } => {
+        Stmt::CanvasDef {
+            width,
+            height,
+            properties,
+        } => {
             let w_val = eval_expr(width, env)?;
             let h_val = eval_expr(height, env)?;
             canvas.width = eval_int(&w_val)? as usize;
@@ -106,7 +121,11 @@ fn execute_stmt(
                 }
             }
         }
-        Stmt::RenderPipeline { source, colormap, target_path } => {
+        Stmt::RenderPipeline {
+            source,
+            colormap,
+            target_path,
+        } => {
             let _src_val = eval_expr(source, env)?;
             let path_val = eval_expr(target_path, env)?;
             let path_str = match path_val {
@@ -114,7 +133,10 @@ fn execute_stmt(
                 _ => return Err("LUM-GRA06: Output path must be a string".into()),
             };
             let chosen_cmap = colormap.as_deref().unwrap_or(&canvas.default_colormap);
-            println!("[✓] Render target: '{}' (Colormap: {})", path_str, chosen_cmap);
+            println!(
+                "[✓] Render target: '{}' (Colormap: {})",
+                path_str, chosen_cmap
+            );
         }
         Stmt::Let(name, expr) => {
             let val = eval_expr(expr, env)?;
@@ -127,7 +149,11 @@ fn execute_stmt(
         Stmt::Import(module_path) => {
             let safe_path = env.resolve_module_path(module_path)?;
             let src = fs::read_to_string(&safe_path).map_err(|e| {
-                format!("LUM-IO01: Failed to read module {}: {}", safe_path.display(), e)
+                format!(
+                    "LUM-IO01: Failed to read module {}: {}",
+                    safe_path.display(),
+                    e
+                )
             })?;
             let tokens = lexer::tokenize(&src);
             let mut parser = Parser::new(tokens);
@@ -148,7 +174,11 @@ fn execute_stmt(
                 execute_stmt(s, env, canvas)?;
             }
         }
-        Stmt::If { cond, then_branch, else_branch } => {
+        Stmt::If {
+            cond,
+            then_branch,
+            else_branch,
+        } => {
             let c_val = eval_expr(cond, env)?;
             let is_true = match c_val {
                 Value::Bool(b) => b,
@@ -169,19 +199,19 @@ fn execute_stmt(
             // Evaluator fallback: execute synchronous
             execute_stmt(body, env, canvas)?;
         }
-        Stmt::While { cond, body } => {
-            loop {
-                let c_val = eval_expr(cond, env)?;
-                let is_true = match c_val {
-                    Value::Bool(b) => b,
-                    Value::Int(n) => n != 0,
-                    Value::Float(f) => f != 0.0,
-                    _ => false,
-                };
-                if !is_true { break; }
-                execute_stmt(body, env, canvas)?;
+        Stmt::While { cond, body } => loop {
+            let c_val = eval_expr(cond, env)?;
+            let is_true = match c_val {
+                Value::Bool(b) => b,
+                Value::Int(n) => n != 0,
+                Value::Float(f) => f != 0.0,
+                _ => false,
+            };
+            if !is_true {
+                break;
             }
-        }
+            execute_stmt(body, env, canvas)?;
+        },
     }
     Ok(())
 }
@@ -303,8 +333,12 @@ fn execute_langevin_diffusion(
 
         // Print progress
         if step % 5 == 0 || step == total_steps - 1 {
-            println!("    Step [{:2}/{}]: Denoising Latent Tensor (Residual Noise Level: {:.4})",
-                step + 1, total_steps, t);
+            println!(
+                "    Step [{:2}/{}]: Denoising Latent Tensor (Residual Noise Level: {:.4})",
+                step + 1,
+                total_steps,
+                t
+            );
         }
 
         for y in 0..h {
@@ -317,13 +351,28 @@ fn execute_langevin_diffusion(
                 let score_b = (target_b - (latent_b[y][x] * 0.5 + 0.5)) * guidance_scale;
 
                 // Langevin Update Step: x_{t-1} = 1/sqrt(alpha) * (x_t + beta * score) + sigma * z
-                let noise_z_r = if step == total_steps - 1 { 0.0 } else { rng.gaussian() };
-                let noise_z_g = if step == total_steps - 1 { 0.0 } else { rng.gaussian() };
-                let noise_z_b = if step == total_steps - 1 { 0.0 } else { rng.gaussian() };
+                let noise_z_r = if step == total_steps - 1 {
+                    0.0
+                } else {
+                    rng.gaussian()
+                };
+                let noise_z_g = if step == total_steps - 1 {
+                    0.0
+                } else {
+                    rng.gaussian()
+                };
+                let noise_z_b = if step == total_steps - 1 {
+                    0.0
+                } else {
+                    rng.gaussian()
+                };
 
-                latent_r[y][x] = (1.0 / alpha.sqrt()) * (latent_r[y][x] + beta * score_r) + sigma * noise_z_r;
-                latent_g[y][x] = (1.0 / alpha.sqrt()) * (latent_g[y][x] + beta * score_g) + sigma * noise_z_g;
-                latent_b[y][x] = (1.0 / alpha.sqrt()) * (latent_b[y][x] + beta * score_b) + sigma * noise_z_b;
+                latent_r[y][x] =
+                    (1.0 / alpha.sqrt()) * (latent_r[y][x] + beta * score_r) + sigma * noise_z_r;
+                latent_g[y][x] =
+                    (1.0 / alpha.sqrt()) * (latent_g[y][x] + beta * score_g) + sigma * noise_z_g;
+                latent_b[y][x] =
+                    (1.0 / alpha.sqrt()) * (latent_b[y][x] + beta * score_b) + sigma * noise_z_b;
             }
         }
     }
@@ -405,7 +454,12 @@ fn eval_expr(expr: &Expr, env: &mut Environment) -> Result<Value, String> {
             let d_ast = symbolic_diff(f_expr, var);
             eval_expr(&d_ast, env)
         }
-        Expr::Propagate2D { field, z, wavelength, dx } => {
+        Expr::Propagate2D {
+            field,
+            z,
+            wavelength,
+            dx,
+        } => {
             let f_val = eval_expr(field, env)?;
             let z_val = eval_float(&eval_expr(z, env)?)?;
             let lambda_val = eval_float(&eval_expr(wavelength, env)?)?;
@@ -512,7 +566,11 @@ fn eval_expr(expr: &Expr, env: &mut Environment) -> Result<Value, String> {
 fn symbolic_diff(expr: &Expr, var: &str) -> Expr {
     match expr {
         Expr::Variable(v) => {
-            if v == var { Expr::Float(1.0) } else { Expr::Float(0.0) }
+            if v == var {
+                Expr::Float(1.0)
+            } else {
+                Expr::Float(0.0)
+            }
         }
         Expr::Int(_) | Expr::Float(_) | Expr::Imaginary(_) | Expr::Str(_) => Expr::Float(0.0),
         Expr::Binary { left, op, right } => match op {
@@ -577,7 +635,9 @@ fn symbolic_diff(expr: &Expr, var: &str) -> Expr {
 fn eval_transpose(val: Value) -> Result<Value, String> {
     match val {
         Value::Array(rows) => {
-            if rows.is_empty() { return Ok(Value::Array(Vec::new())); }
+            if rows.is_empty() {
+                return Ok(Value::Array(Vec::new()));
+            }
             let mut mat: Vec<Vec<Value>> = Vec::new();
             for r in rows {
                 match r {
@@ -585,7 +645,9 @@ fn eval_transpose(val: Value) -> Result<Value, String> {
                     _ => return Err("LUM-T8001: Transpose requires 2D matrix".into()),
                 }
             }
-            if mat.is_empty() { return Ok(Value::Array(Vec::new())); }
+            if mat.is_empty() {
+                return Ok(Value::Array(Vec::new()));
+            }
             let r_count = mat.len();
             let c_count = mat[0].len();
 
@@ -619,20 +681,31 @@ fn eval_slice(val: Value, start: usize, end: usize) -> Result<Value, String> {
 
 fn forward_chain_prove(kb: &KnowledgeBase, query: &str) -> bool {
     let mut known_facts = kb.facts.clone();
-    if known_facts.contains(query) { return true; }
+    if known_facts.contains(query) {
+        return true;
+    }
 
     loop {
         let mut new_inferred = false;
         for rule in &kb.rules {
-            if known_facts.contains(&rule.head) { continue; }
-            let satisfied = rule.body.iter().all(|premise| known_facts.contains(premise));
+            if known_facts.contains(&rule.head) {
+                continue;
+            }
+            let satisfied = rule
+                .body
+                .iter()
+                .all(|premise| known_facts.contains(premise));
             if satisfied {
                 known_facts.insert(rule.head.clone());
                 new_inferred = true;
-                if rule.head == query { return true; }
+                if rule.head == query {
+                    return true;
+                }
             }
         }
-        if !new_inferred { break; }
+        if !new_inferred {
+            break;
+        }
     }
     known_facts.contains(query)
 }
@@ -660,7 +733,9 @@ fn eval_conj(val: Value) -> Result<Value, String> {
         Value::Float(f) => Ok(Value::Float(f)),
         Value::Array(arr) => {
             let mut res = Vec::new();
-            for item in arr { res.push(eval_conj(item)?); }
+            for item in arr {
+                res.push(eval_conj(item)?);
+            }
             Ok(Value::Array(res))
         }
         _ => Err("LUM-P3001: Cannot conjugate non-numeric type".into()),
@@ -669,12 +744,16 @@ fn eval_conj(val: Value) -> Result<Value, String> {
 
 fn eval_intensity(val: Value) -> Result<Value, String> {
     match val {
-        Value::Complex(c) => Ok(Value::Float(((c.re * c.re + c.im * c.im) * 1e6).round() / 1e6)),
+        Value::Complex(c) => Ok(Value::Float(
+            ((c.re * c.re + c.im * c.im) * 1e6).round() / 1e6,
+        )),
         Value::Int(n) => Ok(Value::Float((n * n) as f64)),
         Value::Float(f) => Ok(Value::Float(f * f)),
         Value::Array(arr) => {
             let mut res = Vec::new();
-            for item in arr { res.push(eval_intensity(item)?); }
+            for item in arr {
+                res.push(eval_intensity(item)?);
+            }
             Ok(Value::Array(res))
         }
         _ => Err("LUM-P3002: Cannot compute intensity of non-numeric type".into()),
@@ -691,7 +770,9 @@ fn eval_qstate(val: Value) -> Result<Value, String> {
                 norm_sq += c.re * c.re + c.im * c.im;
                 complex_vec.push(c);
             }
-            if norm_sq == 0.0 { return Err("LUM-Q02: Zero norm".into()); }
+            if norm_sq == 0.0 {
+                return Err("LUM-Q02: Zero norm".into());
+            }
             let norm = norm_sq.sqrt();
             let normalized: Vec<Value> = complex_vec
                 .into_iter()
@@ -714,8 +795,14 @@ fn eval_beamsplitter(val: Value) -> Result<Value, String> {
             if arr.len() != 2 {
                 return Err("LUM-Q04: Beam splitter requires 2-mode state".into());
             }
-            let a = match arr[0] { Value::Complex(c) => c, _ => unreachable!() };
-            let b = match arr[1] { Value::Complex(c) => c, _ => unreachable!() };
+            let a = match arr[0] {
+                Value::Complex(c) => c,
+                _ => unreachable!(),
+            };
+            let b = match arr[1] {
+                Value::Complex(c) => c,
+                _ => unreachable!(),
+            };
 
             let inv_sqrt2 = 1.0 / 2.0_f64.sqrt();
             let ib = Complex64::new(-b.im, b.re);
@@ -733,7 +820,10 @@ fn eval_beamsplitter(val: Value) -> Result<Value, String> {
                 (out_b.im * inv_sqrt2 * 1e6).round() / 1e6,
             );
 
-            Ok(Value::Array(vec![Value::Complex(res_a), Value::Complex(res_b)]))
+            Ok(Value::Array(vec![
+                Value::Complex(res_a),
+                Value::Complex(res_b),
+            ]))
         }
         _ => unreachable!(),
     }
@@ -762,7 +852,9 @@ fn dft_1d(inputs: &[Complex64], inverse: bool) -> Vec<Complex64> {
 fn eval_dft_nd(val: Value, inverse: bool) -> Result<Value, String> {
     match val {
         Value::Array(arr) => {
-            if arr.is_empty() { return Ok(Value::Array(Vec::new())); }
+            if arr.is_empty() {
+                return Ok(Value::Array(Vec::new()));
+            }
             if matches!(&arr[0], Value::Array(_)) {
                 let rows = arr.len();
                 let mut mat: Vec<Vec<Complex64>> = Vec::new();
@@ -771,7 +863,9 @@ fn eval_dft_nd(val: Value, inverse: bool) -> Result<Value, String> {
                         Value::Array(elements) => {
                             let mut row_c = Vec::new();
                             for el in elements {
-                                row_c.push(to_complex(el).ok_or("LUM-DFT: Elements must be complex")?);
+                                row_c.push(
+                                    to_complex(el).ok_or("LUM-DFT: Elements must be complex")?,
+                                );
                             }
                             mat.push(row_c);
                         }
@@ -779,19 +873,29 @@ fn eval_dft_nd(val: Value, inverse: bool) -> Result<Value, String> {
                     }
                 }
                 let cols = mat[0].len();
-                for i in 0..rows { mat[i] = dft_1d(&mat[i], inverse); }
+                for i in 0..rows {
+                    mat[i] = dft_1d(&mat[i], inverse);
+                }
                 for j in 0..cols {
                     let mut col = Vec::new();
-                    for i in 0..rows { col.push(mat[i][j]); }
+                    for i in 0..rows {
+                        col.push(mat[i][j]);
+                    }
                     let transformed = dft_1d(&col, inverse);
-                    for i in 0..rows { mat[i][j] = transformed[i]; }
+                    for i in 0..rows {
+                        mat[i][j] = transformed[i];
+                    }
                 }
-                let res = mat.into_iter().map(|r| Value::Array(r.into_iter().map(Value::Complex).collect())).collect();
+                let res = mat
+                    .into_iter()
+                    .map(|r| Value::Array(r.into_iter().map(Value::Complex).collect()))
+                    .collect();
                 Ok(Value::Array(res))
             } else {
                 let mut complex_inputs = Vec::new();
                 for item in arr {
-                    complex_inputs.push(to_complex(item).ok_or("LUM-DFT: Elements must be complex")?);
+                    complex_inputs
+                        .push(to_complex(item).ok_or("LUM-DFT: Elements must be complex")?);
                 }
                 let out = dft_1d(&complex_inputs, inverse);
                 Ok(Value::Array(out.into_iter().map(Value::Complex).collect()))
@@ -801,7 +905,12 @@ fn eval_dft_nd(val: Value, inverse: bool) -> Result<Value, String> {
     }
 }
 
-fn eval_asm_propagation(field_val: Value, z: f64, wavelength: f64, dx: f64) -> Result<Value, String> {
+fn eval_asm_propagation(
+    field_val: Value,
+    z: f64,
+    wavelength: f64,
+    dx: f64,
+) -> Result<Value, String> {
     let freq_field = eval_dft_nd(field_val, false)?;
     let k0 = 2.0 * PI / wavelength;
     let mat = match freq_field {
@@ -849,7 +958,9 @@ fn eval_asm_propagation(field_val: Value, z: f64, wavelength: f64, dx: f64) -> R
 }
 
 fn eval_fdtd_2d(steps: usize, size: usize) -> Result<Value, String> {
-    if size < 3 { return Err("LUM-FDTD: Grid size must be >= 3".into()); }
+    if size < 3 {
+        return Err("LUM-FDTD: Grid size must be >= 3".into());
+    }
     let mut ez = vec![vec![0.0; size]; size];
     let mut hx = vec![vec![0.0; size]; size];
     let mut hy = vec![vec![0.0; size]; size];
@@ -875,10 +986,13 @@ fn eval_fdtd_2d(steps: usize, size: usize) -> Result<Value, String> {
 
     let mut result = Vec::new();
     for row in ez {
-        let row_vals = row.into_iter().map(|val| {
-            let rounded = (val * 1e4).round() / 1e4;
-            Value::Complex(Complex64::new(rounded, 0.0))
-        }).collect();
+        let row_vals = row
+            .into_iter()
+            .map(|val| {
+                let rounded = (val * 1e4).round() / 1e4;
+                Value::Complex(Complex64::new(rounded, 0.0))
+            })
+            .collect();
         result.push(Value::Array(row_vals));
     }
     Ok(Value::Array(result))
@@ -895,20 +1009,28 @@ fn to_complex(v: Value) -> Option<Complex64> {
 
 fn matrix_multiply(a: &[Value], b: &[Value]) -> Result<Value, String> {
     let rows_a = a.len();
-    let mat_a: Vec<&Vec<Value>> = a.iter().map(|row| match row {
-        Value::Array(r) => Ok(r),
-        _ => Err("LUM-M7001: LHS must be 2D".to_string()),
-    }).collect::<Result<_, _>>()?;
+    let mat_a: Vec<&Vec<Value>> = a
+        .iter()
+        .map(|row| match row {
+            Value::Array(r) => Ok(r),
+            _ => Err("LUM-M7001: LHS must be 2D".to_string()),
+        })
+        .collect::<Result<_, _>>()?;
 
     let cols_a = if rows_a > 0 { mat_a[0].len() } else { 0 };
     let rows_b = b.len();
-    let mat_b: Vec<&Vec<Value>> = b.iter().map(|row| match row {
-        Value::Array(r) => Ok(r),
-        _ => Err("LUM-M7002: RHS must be 2D".to_string()),
-    }).collect::<Result<_, _>>()?;
+    let mat_b: Vec<&Vec<Value>> = b
+        .iter()
+        .map(|row| match row {
+            Value::Array(r) => Ok(r),
+            _ => Err("LUM-M7002: RHS must be 2D".to_string()),
+        })
+        .collect::<Result<_, _>>()?;
 
     let cols_b = if rows_b > 0 { mat_b[0].len() } else { 0 };
-    if cols_a != rows_b { return Err("LUM-M7003: Dim mismatch".into()); }
+    if cols_a != rows_b {
+        return Err("LUM-M7003: Dim mismatch".into());
+    }
 
     let mut result = Vec::new();
     for i in 0..rows_a {
@@ -935,7 +1057,9 @@ fn eval_binary(left: Value, op: &BinaryOp, right: Value) -> Result<Value, String
     }
 
     if let (Value::Array(a), Value::Array(b)) = (&left, &right) {
-        if a.len() != b.len() { return Err("LUM-T6001: Dim mismatch".into()); }
+        if a.len() != b.len() {
+            return Err("LUM-T6001: Dim mismatch".into());
+        }
         let mut result = Vec::new();
         for (x, y) in a.iter().zip(b.iter()) {
             result.push(eval_binary(x.clone(), op, y.clone())?);
@@ -960,7 +1084,11 @@ fn eval_binary(left: Value, op: &BinaryOp, right: Value) -> Result<Value, String
             BinaryOp::Sub => Ok(Value::Int(a - b)),
             BinaryOp::Mul => Ok(Value::Int(a * b)),
             BinaryOp::Div => {
-                if b == 0 { Err("LUM-R4002: Div zero".into()) } else { Ok(Value::Int(a / b)) }
+                if b == 0 {
+                    Err("LUM-R4002: Div zero".into())
+                } else {
+                    Ok(Value::Int(a / b))
+                }
             }
             BinaryOp::Equal => Ok(Value::Bool(a == b)),
             _ => Err("LUM-R4005: Unsupported op".into()),
@@ -970,7 +1098,11 @@ fn eval_binary(left: Value, op: &BinaryOp, right: Value) -> Result<Value, String
             BinaryOp::Sub => Ok(Value::Float(a - b)),
             BinaryOp::Mul => Ok(Value::Float(a * b)),
             BinaryOp::Div => {
-                if b == 0.0 { Err("LUM-R4002: Div zero".into()) } else { Ok(Value::Float(a / b)) }
+                if b == 0.0 {
+                    Err("LUM-R4002: Div zero".into())
+                } else {
+                    Ok(Value::Float(a / b))
+                }
             }
             BinaryOp::Equal => Ok(Value::Bool(a == b)),
             _ => Err("LUM-R4005: Unsupported op".into()),
@@ -980,7 +1112,11 @@ fn eval_binary(left: Value, op: &BinaryOp, right: Value) -> Result<Value, String
             BinaryOp::Sub => Ok(Value::Float(a as f64 - b)),
             BinaryOp::Mul => Ok(Value::Float(a as f64 * b)),
             BinaryOp::Div => {
-                if b == 0.0 { Err("LUM-R4002: Div zero".into()) } else { Ok(Value::Float((a as f64) / b)) }
+                if b == 0.0 {
+                    Err("LUM-R4002: Div zero".into())
+                } else {
+                    Ok(Value::Float((a as f64) / b))
+                }
             }
             BinaryOp::Equal => Ok(Value::Bool((a as f64) == b)),
             _ => Err("LUM-R4005: Unsupported op".into()),
@@ -990,7 +1126,11 @@ fn eval_binary(left: Value, op: &BinaryOp, right: Value) -> Result<Value, String
             BinaryOp::Sub => Ok(Value::Float(a - b as f64)),
             BinaryOp::Mul => Ok(Value::Float(a * b as f64)),
             BinaryOp::Div => {
-                if b == 0 { Err("LUM-R4002: Div zero".into()) } else { Ok(Value::Float(a / (b as f64))) }
+                if b == 0 {
+                    Err("LUM-R4002: Div zero".into())
+                } else {
+                    Ok(Value::Float(a / (b as f64)))
+                }
             }
             BinaryOp::Equal => Ok(Value::Bool(a == (b as f64))),
             _ => Err("LUM-R4005: Unsupported op".into()),

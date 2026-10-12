@@ -1,0 +1,259 @@
+use memmap2::Mmap;
+use std::collections::HashMap;
+use std::fs::File;
+use std::io::{Cursor, Read, Seek, SeekFrom};
+
+#[derive(Debug, Clone)]
+pub struct TensorInfo {
+    pub name: String,
+    pub dimensions: Vec<u64>,
+    pub tensor_type: u32,
+    pub offset: u64,
+}
+
+pub struct GgufModel {
+    pub mmap: Mmap,
+    pub tensor_count: u64,
+    pub metadata_kv_count: u64,
+    pub tensors: HashMap<String, TensorInfo>,
+}
+
+impl GgufModel {
+    pub fn load(path: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        let file = File::open(path)?;
+        let mmap = unsafe { Mmap::map(&file)? };
+
+        if mmap.len() < 24 {
+            return Err("File too small to be a valid GGUF".into());
+        }
+
+        let magic = &mmap[0..4];
+        if magic != b"GGUF" {
+            return Err("Invalid GGUF magic bytes".into());
+        }
+
+        let version = u32::from_le_bytes(mmap[4..8].try_into()?);
+        let tensor_count = u64::from_le_bytes(mmap[8..16].try_into()?);
+        let metadata_kv_count = u64::from_le_bytes(mmap[16..24].try_into()?);
+
+        println!(
+            " [GGUF] Magic: GGUF | Version: {} | Tensors: {} | KV Metadatas: {}",
+            version, tensor_count, metadata_kv_count
+        );
+
+        let mut cursor = Cursor::new(&mmap[24..]);
+
+        for i in 0..metadata_kv_count {
+            let key = match Self::read_string(&mut cursor) {
+                Ok(k) => k,
+                Err(e) => {
+                    return Err(
+                        format!("Error reading key {}/{}: {}", i + 1, metadata_kv_count, e).into(),
+                    )
+                }
+            };
+            let val_type = Self::read_u32(&mut cursor)?;
+            if let Err(e) = Self::skip_val(&mut cursor, val_type) {
+                return Err(format!(
+                    "Error skipping value for key '{}' (type {}): {}",
+                    key, val_type, e
+                )
+                .into());
+            }
+        }
+
+        let mut tensors = HashMap::new();
+        for i in 0..tensor_count {
+            let name = match Self::read_string(&mut cursor) {
+                Ok(n) => n,
+                Err(e) => {
+                    return Err(format!(
+                        "Error parsing tensor name {}/{}: {}",
+                        i + 1,
+                        tensor_count,
+                        e
+                    )
+                    .into())
+                }
+            };
+            let n_dims = Self::read_u32(&mut cursor)?;
+            let mut dims = Vec::with_capacity(n_dims as usize);
+            for _ in 0..n_dims {
+                dims.push(Self::read_u64(&mut cursor)?);
+            }
+            let tensor_type = Self::read_u32(&mut cursor)?;
+            let offset = Self::read_u64(&mut cursor)?;
+
+            tensors.insert(
+                name.clone(),
+                TensorInfo {
+                    name,
+                    dimensions: dims,
+                    tensor_type,
+                    offset,
+                },
+            );
+        }
+
+        Ok(Self {
+            mmap,
+            tensor_count,
+            metadata_kv_count,
+            tensors,
+        })
+    }
+
+    fn read_string(cursor: &mut Cursor<&[u8]>) -> Result<String, Box<dyn std::error::Error>> {
+        let len = Self::read_u64(cursor)? as usize;
+        let pos = cursor.position() as usize;
+        let slice = cursor.get_ref();
+        if pos + len > slice.len() {
+            return Err("Unexpected EOF while reading string".into());
+        }
+        let s = String::from_utf8_lossy(&slice[pos..pos + len]).to_string();
+        cursor.seek(SeekFrom::Current(len as i64))?;
+        Ok(s)
+    }
+
+    fn read_u32(cursor: &mut Cursor<&[u8]>) -> Result<u32, Box<dyn std::error::Error>> {
+        let mut buf = [0u8; 4];
+        cursor.read_exact(&mut buf)?;
+        Ok(u32::from_le_bytes(buf))
+    }
+
+    fn read_u64(cursor: &mut Cursor<&[u8]>) -> Result<u64, Box<dyn std::error::Error>> {
+        let mut buf = [0u8; 8];
+        cursor.read_exact(&mut buf)?;
+        Ok(u64::from_le_bytes(buf))
+    }
+
+    fn skip_val(
+        cursor: &mut Cursor<&[u8]>,
+        val_type: u32,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        // GGUF metadata value types:
+        // 0 = UINT8
+        // 1 = INT8
+        // 2 = UINT16
+        // 3 = INT16
+        // 4 = UINT32
+        // 5 = INT32
+        // 6 = FLOAT32
+        // 7 = BOOL
+        // 8 = STRING
+        // 9 = ARRAY
+        // 10 = UINT64
+        // 11 = INT64
+        // 12 = FLOAT64
+
+        match val_type {
+            // 1-byte values
+            0 | 1 | 7 => {
+                cursor.seek(SeekFrom::Current(1))?;
+            }
+
+            // 2-byte values
+            2 | 3 => {
+                cursor.seek(SeekFrom::Current(2))?;
+            }
+
+            // 4-byte values
+            4 | 5 | 6 => {
+                cursor.seek(SeekFrom::Current(4))?;
+            }
+
+            // STRING
+            8 => {
+                let len = Self::read_u64(cursor)?;
+
+                let pos = cursor.position() as usize;
+                let total = cursor.get_ref().len();
+
+                let end = pos
+                    .checked_add(len as usize)
+                    .ok_or("GGUF string length overflow")?;
+
+                if end > total {
+                    return Err(format!(
+                        "Unexpected EOF while skipping STRING: {} bytes requested, {} available",
+                        len,
+                        total.saturating_sub(pos)
+                    )
+                    .into());
+                }
+
+                cursor.seek(SeekFrom::Current(len as i64))?;
+            }
+
+            // ARRAY
+            9 => {
+                let arr_type = Self::read_u32(cursor)?;
+                let arr_len = Self::read_u64(cursor)?;
+
+                match arr_type {
+                    // 1-byte array elements
+                    0 | 1 | 7 => {
+                        let bytes = arr_len;
+                        cursor.seek(SeekFrom::Current(bytes as i64))?;
+                    }
+
+                    // 2-byte array elements
+                    2 | 3 => {
+                        let bytes = arr_len.checked_mul(2).ok_or("GGUF array size overflow")?;
+
+                        cursor.seek(SeekFrom::Current(bytes as i64))?;
+                    }
+
+                    // 4-byte array elements
+                    4 | 5 | 6 => {
+                        let bytes = arr_len.checked_mul(4).ok_or("GGUF array size overflow")?;
+
+                        cursor.seek(SeekFrom::Current(bytes as i64))?;
+                    }
+
+                    // STRING array
+                    8 => {
+                        for _ in 0..arr_len {
+                            let slen = Self::read_u64(cursor)?;
+
+                            let pos = cursor.position() as usize;
+                            let total = cursor.get_ref().len();
+
+                            let end = pos
+                                .checked_add(slen as usize)
+                                .ok_or("GGUF string-array length overflow")?;
+
+                            if end > total {
+                                return Err("Unexpected EOF inside GGUF STRING array".into());
+                            }
+
+                            cursor.seek(SeekFrom::Current(slen as i64))?;
+                        }
+                    }
+
+                    // UINT64 / INT64 / FLOAT64
+                    10 | 11 | 12 => {
+                        let bytes = arr_len.checked_mul(8).ok_or("GGUF array size overflow")?;
+
+                        cursor.seek(SeekFrom::Current(bytes as i64))?;
+                    }
+
+                    _ => {
+                        return Err(format!("Unknown GGUF array value type: {}", arr_type).into());
+                    }
+                }
+            }
+
+            // 8-byte values
+            10 | 11 | 12 => {
+                cursor.seek(SeekFrom::Current(8))?;
+            }
+
+            _ => {
+                return Err(format!("Unsupported GGUF metadata value type: {}", val_type).into());
+            }
+        }
+
+        Ok(())
+    }
+}

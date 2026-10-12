@@ -1,0 +1,5 @@
+print "=== [!] INITIATING LIGHTWEIGHT QUANTUM CRACK ===";
+let q_state = 1.0 + 1.0i;
+print "Target Qubit State:";
+print q_state;
+print "Status: [!] BYPASSING SECURITY VIA JIT BYPASS...";

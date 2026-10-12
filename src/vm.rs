@@ -105,14 +105,20 @@ impl SVM {
 
             let step_result = self.execute_opcode(op, chunk, current_ip);
             if let Err(err_msg) = step_result {
-                eprintln!("[SVM Actor Fault-Isolation] Trapped Exception at IP {:04}: {}", current_ip, err_msg);
+                eprintln!(
+                    "[SVM Actor Fault-Isolation] Trapped Exception at IP {:04}: {}",
+                    current_ip, err_msg
+                );
                 eprintln!("[SVM Actor Sandbox] Trapped execution boundary; isolated process safely terminated.");
                 return Err(err_msg);
             }
         }
 
         let elapsed = start_time.elapsed();
-        println!("[SVM Pipeline] Total Execution Finished in {:.3} ms.", elapsed.as_secs_f64() * 1000.0);
+        println!(
+            "[SVM Pipeline] Total Execution Finished in {:.3} ms.",
+            elapsed.as_secs_f64() * 1000.0
+        );
         Ok(())
     }
 
@@ -122,14 +128,21 @@ impl SVM {
             let op = &chunk.code[self.ip];
             let current_ip = self.ip;
             self.ip += 1;
-            if let OpCode::Halt = op { break; }
+            if let OpCode::Halt = op {
+                break;
+            }
             self.execute_opcode(op, chunk, current_ip)?;
         }
         Ok(())
     }
 
     #[inline(always)]
-    fn execute_opcode(&mut self, op: &OpCode, chunk: &Chunk, current_ip: usize) -> Result<(), String> {
+    fn execute_opcode(
+        &mut self,
+        op: &OpCode,
+        chunk: &Chunk,
+        current_ip: usize,
+    ) -> Result<(), String> {
         match op {
             OpCode::LoadConst { dst, const_idx } => {
                 self.registers[*dst as usize] = chunk.constants[*const_idx].clone();
@@ -185,10 +198,17 @@ impl SVM {
                 // Backward Jump Detection for Native JIT
                 if *offset <= current_ip {
                     if self.profiler.record_jump(*offset) {
-                        println!("[SVM Hot-Spot Profiler] Hot Loop Detected at target IP {:04}!", *offset);
-                        if let Some(spec) = crate::jit_emitter::LoopInspector::inspect(chunk, *offset, current_ip) {
+                        println!(
+                            "[SVM Hot-Spot Profiler] Hot Loop Detected at target IP {:04}!",
+                            *offset
+                        );
+                        if let Some(spec) =
+                            crate::jit_emitter::LoopInspector::inspect(chunk, *offset, current_ip)
+                        {
                             println!("  ├── [Loop Inspector] Pattern Matched: {:?}", spec);
-                            println!("  ├── [JIT Compiler] Compiling Dynamic ARMv7 Machine Code...");
+                            println!(
+                                "  ├── [JIT Compiler] Compiling Dynamic ARMv7 Machine Code..."
+                            );
                             match crate::jit_emitter::DynamicJit::compile_loop(&spec) {
                                 Ok(exec_buf) => {
                                     println!("  ├── [Executable Memory] Allocated at {:p} (PROT_READ | PROT_EXEC)", exec_buf.ptr);
@@ -198,16 +218,20 @@ impl SVM {
                                             raw_regs[i] = n;
                                         }
                                     }
-                                    let limit_val = if let Value::Int(lim) = self.registers[spec.limit_reg] { lim as i32 } else { 0 };
+                                    let limit_val = match spec.limit {
+                                        crate::jit_emitter::LimitSpec::Constant(c) => c as i32,
+                                        crate::jit_emitter::LimitSpec::Register(r) => {
+                                            if let Value::Int(lim) = self.registers[r as usize] { lim as i32 } else { 0 }
+                                        }
+                                    };
 
                                     unsafe {
-                                        type NativeFn = extern "C" fn(*mut i64, i32) -> i32;
+                                        type NativeFn = extern "C" fn(*mut i64, i32);
                                         let jitted_fn: NativeFn = exec_buf.as_fn();
-                                        let ret_val = jitted_fn(raw_regs.as_mut_ptr(), limit_val);
-                                        println!("  └── [Native ARM CPU] Executed loop to completion. Native return: {}", ret_val);
-                                        // Commit explicitly to target accumulator and counter
-                                        self.registers[spec.accumulator_reg] = Value::Int(raw_regs[spec.accumulator_reg]);
-                                        self.registers[spec.counter_reg] = Value::Int(raw_regs[spec.counter_reg]);
+                                        jitted_fn(raw_regs.as_mut_ptr(), limit_val);
+                                        println!("  └── [Native ARM CPU] Executed loop to completion.");
+                                        self.registers[spec.accum_reg as usize] = Value::Int(raw_regs[spec.accum_reg as usize]);
+                                        self.registers[spec.counter_reg as usize] = Value::Int(raw_regs[spec.counter_reg as usize]);
                                     }
                                     // Loop finished natively, skip past the loop back-edge
                                     self.ip = current_ip + 1;
@@ -236,14 +260,20 @@ impl SVM {
             OpCode::Print { src } => {
                 println!("{}", self.registers[*src as usize]);
             }
-            OpCode::SpawnActor { entry_offset, end_offset: _ } => {
+            OpCode::SpawnActor {
+                entry_offset,
+                end_offset: _,
+            } => {
                 let entry = *entry_offset;
                 let chunk_clone = chunk.clone();
                 let initial_regs = self.registers.clone();
                 let worker_tx = self.mailbox_tx.clone();
                 let worker_rx = Arc::clone(&self.mailbox_rx);
 
-                println!("[SVM Actor Runtime] Spawning Concurrent Worker Process at IP {:04}...", entry);
+                println!(
+                    "[SVM Actor Runtime] Spawning Concurrent Worker Process at IP {:04}...",
+                    entry
+                );
 
                 thread::spawn(move || {
                     let mut actor_vm = SVM::new();
@@ -260,10 +290,17 @@ impl SVM {
             }
             OpCode::RecvMsg { dst } => {
                 let rx_lock = self.mailbox_rx.lock().map_err(|e| e.to_string())?;
-                let val = rx_lock.recv().map_err(|_| "SVM-Actor: Channel closed during receive".to_string())?;
+                let val = rx_lock
+                    .recv()
+                    .map_err(|_| "SVM-Actor: Channel closed during receive".to_string())?;
                 self.registers[*dst as usize] = val;
             }
-            OpCode::Call { func_ip, ret_dst, arg_start, arg_count } => {
+            OpCode::Call {
+                func_ip,
+                ret_dst,
+                arg_start,
+                arg_count,
+            } => {
                 let frame = CallFrame {
                     return_ip: self.ip,
                     ret_dst: *ret_dst,
@@ -288,6 +325,22 @@ impl SVM {
                     self.ip = usize::MAX;
                 }
             }
+            OpCode::MakeArray { dst, items } => {
+                let mut values = Vec::with_capacity(items.len());
+
+                for reg in items {
+                    let idx = *reg as usize;
+
+                    if idx >= self.registers.len() {
+                        return Err(format!("SVM-ARRAY: register out of bounds: r{}", idx));
+                    }
+
+                    values.push(self.registers[idx].clone());
+                }
+
+                self.registers[*dst as usize] = Value::Array(values);
+            }
+
             OpCode::Intensity { dst, src } => {
                 let val = &self.registers[*src as usize];
                 self.registers[*dst as usize] = vm_intensity(val)?;
@@ -297,7 +350,13 @@ impl SVM {
                 let sz = vm_to_int(&self.registers[*size as usize])? as usize;
                 self.registers[*dst as usize] = self.vm_fdtd2d_arena(s, sz)?;
             }
-            OpCode::Propagate2D { dst, field, z, lambda_val, dx } => {
+            OpCode::Propagate2D {
+                dst,
+                field,
+                z,
+                lambda_val,
+                dx,
+            } => {
                 let f = self.registers[*field as usize].clone();
                 let z_v = vm_to_float(&self.registers[*z as usize])?;
                 let l_v = vm_to_float(&self.registers[*lambda_val as usize])?;
@@ -312,12 +371,21 @@ impl SVM {
                 self.canvas_w = vm_to_int(&self.registers[*width as usize])? as usize;
                 self.canvas_h = vm_to_int(&self.registers[*height as usize])? as usize;
             }
-            OpCode::Render { src, path_idx, cmap_idx } => {
+            OpCode::Render {
+                src,
+                path_idx,
+                cmap_idx,
+            } => {
                 let val = &self.registers[*src as usize];
                 let path = &chunk.strings[*path_idx];
-                let cmap = cmap_idx.map(|idx| chunk.strings[idx].as_str()).unwrap_or("viridis");
+                let cmap = cmap_idx
+                    .map(|idx| chunk.strings[idx].as_str())
+                    .unwrap_or("viridis");
                 vm_render_surface(val, cmap, path, self.canvas_w, self.canvas_h)?;
-                println!("[✓ SVM] Bytecode Pipeline Rendered Surface: '{}' (Colormap: {})", path, cmap);
+                println!(
+                    "[✓ SVM] Bytecode Pipeline Rendered Surface: '{}' (Colormap: {})",
+                    path, cmap
+                );
             }
             OpCode::Halt => {
                 self.ip = usize::MAX;
@@ -327,7 +395,9 @@ impl SVM {
     }
 
     fn vm_fdtd2d_arena(&mut self, steps: usize, size: usize) -> Result<Value, String> {
-        if size < 3 { return Err("SVM-ALU: FDTD grid dimension must be >= 3".into()); }
+        if size < 3 {
+            return Err("SVM-ALU: FDTD grid dimension must be >= 3".into());
+        }
         let ez_offset = self.arena.allocate_grid(size, size, 0.0);
         let hx_offset = self.arena.allocate_grid(size, size, 0.0);
         let hy_offset = self.arena.allocate_grid(size, size, 0.0);
@@ -353,7 +423,8 @@ impl SVM {
                     let hx_curr = self.arena.storage[hx_offset + i * size + j];
                     let hx_prev = self.arena.storage[hx_offset + i * size + (j - 1)];
 
-                    self.arena.storage[ez_offset + i * size + j] += sc * ((hy_curr - hy_prev) - (hx_curr - hx_prev));
+                    self.arena.storage[ez_offset + i * size + j] +=
+                        sc * ((hy_curr - hy_prev) - (hx_curr - hx_prev));
                 }
             }
             let pulse = (-(((t as f64 - 10.0) / 4.0).powi(2))).exp();
@@ -423,16 +494,32 @@ fn vm_mul(a: &Value, b: &Value) -> Result<Value, String> {
 fn vm_div(a: &Value, b: &Value) -> Result<Value, String> {
     match (a, b) {
         (Value::Int(x), Value::Int(y)) => {
-            if *y == 0 { Err("SVM: Division by zero".into()) } else { Ok(Value::Int(x / y)) }
+            if *y == 0 {
+                Err("SVM: Division by zero".into())
+            } else {
+                Ok(Value::Int(x / y))
+            }
         }
         (Value::Float(x), Value::Float(y)) => {
-            if *y == 0.0 { Err("SVM: Division by zero".into()) } else { Ok(Value::Float(x / y)) }
+            if *y == 0.0 {
+                Err("SVM: Division by zero".into())
+            } else {
+                Ok(Value::Float(x / y))
+            }
         }
         (Value::Int(x), Value::Float(y)) => {
-            if *y == 0.0 { Err("SVM: Division by zero".into()) } else { Ok(Value::Float((*x as f64) / y)) }
+            if *y == 0.0 {
+                Err("SVM: Division by zero".into())
+            } else {
+                Ok(Value::Float((*x as f64) / y))
+            }
         }
         (Value::Float(x), Value::Int(y)) => {
-            if *y == 0 { Err("SVM: Division by zero".into()) } else { Ok(Value::Float(x / (*y as f64))) }
+            if *y == 0 {
+                Err("SVM: Division by zero".into())
+            } else {
+                Ok(Value::Float(x / (*y as f64)))
+            }
         }
         _ => Err("SVM: Div operand type mismatch".into()),
     }
@@ -475,7 +562,9 @@ fn dft_1d(inputs: &[Complex64], inverse: bool) -> Vec<Complex64> {
 fn vm_dft_nd(val: Value, inverse: bool) -> Result<Value, String> {
     match val {
         Value::Array(arr) => {
-            if arr.is_empty() { return Ok(Value::Array(Vec::new())); }
+            if arr.is_empty() {
+                return Ok(Value::Array(Vec::new()));
+            }
             let rows = arr.len();
             let mut mat: Vec<Vec<Complex64>> = Vec::with_capacity(rows);
             for r in arr {
@@ -497,14 +586,24 @@ fn vm_dft_nd(val: Value, inverse: bool) -> Result<Value, String> {
                 }
             }
             let cols = mat[0].len();
-            for i in 0..rows { mat[i] = dft_1d(&mat[i], inverse); }
+            for i in 0..rows {
+                mat[i] = dft_1d(&mat[i], inverse);
+            }
             for j in 0..cols {
                 let mut col = Vec::with_capacity(rows);
-                for i in 0..rows { col.push(mat[i][j]); }
+                for i in 0..rows {
+                    col.push(mat[i][j]);
+                }
                 let trans = dft_1d(&col, inverse);
-                for i in 0..rows { mat[i][j] = trans[i]; }
+                for i in 0..rows {
+                    mat[i][j] = trans[i];
+                }
             }
-            Ok(Value::Array(mat.into_iter().map(|r| Value::Array(r.into_iter().map(Value::Complex).collect())).collect()))
+            Ok(Value::Array(
+                mat.into_iter()
+                    .map(|r| Value::Array(r.into_iter().map(Value::Complex).collect()))
+                    .collect(),
+            ))
         }
         _ => Err("SVM-DFT: Input required as tensor array".into()),
     }
@@ -550,12 +649,20 @@ fn vm_asm_propagation(field_val: Value, z: f64, wavelength: f64, dx: f64) -> Res
     vm_dft_nd(Value::Array(modified), true)
 }
 
-fn vm_render_surface(val: &Value, cmap: &str, filename: &str, _cw: usize, _ch: usize) -> Result<(), String> {
+fn vm_render_surface(
+    val: &Value,
+    cmap: &str,
+    filename: &str,
+    _cw: usize,
+    _ch: usize,
+) -> Result<(), String> {
     let rows = match val {
         Value::Array(r) => r,
         _ => return Err("SVM-Render: Render target must be 2D array".into()),
     };
-    if rows.is_empty() { return Ok(()); }
+    if rows.is_empty() {
+        return Ok(());
+    }
     let h = rows.len();
     let mut num_grid: Vec<Vec<f64>> = Vec::with_capacity(h);
     let mut max_val: f64 = 1e-9;
@@ -571,8 +678,12 @@ fn vm_render_surface(val: &Value, cmap: &str, filename: &str, _cw: usize, _ch: u
                     Value::Complex(comp) => (comp.re * comp.re + comp.im * comp.im).sqrt(),
                     _ => 0.0,
                 };
-                if n > max_val { max_val = n; }
-                if n < min_val { min_val = n; }
+                if n > max_val {
+                    max_val = n;
+                }
+                if n < min_val {
+                    min_val = n;
+                }
                 row_n.push(n);
             }
             num_grid.push(row_n);

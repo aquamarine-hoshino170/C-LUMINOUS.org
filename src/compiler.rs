@@ -42,7 +42,8 @@ impl BytecodeCompiler {
             Stmt::FnDef { name, params, body } => {
                 let jmp_over_idx = self.chunk.emit(OpCode::Jmp { offset: 0 });
                 let func_entry = self.chunk.code.len();
-                self.func_map.insert(name.clone(), (func_entry, params.clone()));
+                self.func_map
+                    .insert(name.clone(), (func_entry, params.clone()));
 
                 // Save outer variables scope
                 let outer_vars = self.var_map.clone();
@@ -60,7 +61,10 @@ impl BytecodeCompiler {
                 // Default return if not explicit
                 let dummy_zero = self.alloc_reg()?;
                 let c_idx = self.chunk.add_constant(Value::Int(0));
-                self.chunk.emit(OpCode::LoadConst { dst: dummy_zero, const_idx: c_idx });
+                self.chunk.emit(OpCode::LoadConst {
+                    dst: dummy_zero,
+                    const_idx: c_idx,
+                });
                 self.chunk.emit(OpCode::Ret { src: dummy_zero });
 
                 let func_end = self.chunk.code.len();
@@ -76,7 +80,10 @@ impl BytecodeCompiler {
                 } else {
                     let r_zero = self.alloc_reg()?;
                     let c_idx = self.chunk.add_constant(Value::Int(0));
-                    self.chunk.emit(OpCode::LoadConst { dst: r_zero, const_idx: c_idx });
+                    self.chunk.emit(OpCode::LoadConst {
+                        dst: r_zero,
+                        const_idx: c_idx,
+                    });
                     r_zero
                 };
                 self.chunk.emit(OpCode::Ret { src: r });
@@ -87,8 +94,9 @@ impl BytecodeCompiler {
             }
             Stmt::Assign(name, expr) => {
                 let r_val = self.compile_expr(expr)?;
-                let &dst = self.var_map.get(&name)
-                    .ok_or_else(|| format!("LUM-VM06: Cannot assign to undefined variable '{}'", name))?;
+                let &dst = self.var_map.get(&name).ok_or_else(|| {
+                    format!("LUM-VM06: Cannot assign to undefined variable '{}'", name)
+                })?;
                 self.chunk.emit(OpCode::Mov { dst, src: r_val });
             }
             Stmt::Print(expr) => {
@@ -100,11 +108,18 @@ impl BytecodeCompiler {
                     self.compile_stmt(s)?;
                 }
             }
-            Stmt::If { cond, then_branch, else_branch } => {
+            Stmt::If {
+                cond,
+                then_branch,
+                else_branch,
+            } => {
                 let r_cond = self.compile_expr(cond)?;
                 // Emit placeholder jump if false
-                let jmp_false_idx = self.chunk.emit(OpCode::JmpIfFalse { cond: r_cond, offset: 0 });
-                
+                let jmp_false_idx = self.chunk.emit(OpCode::JmpIfFalse {
+                    cond: r_cond,
+                    offset: 0,
+                });
+
                 self.compile_stmt(*then_branch)?;
 
                 if let Some(else_b) = else_branch {
@@ -126,16 +141,23 @@ impl BytecodeCompiler {
                 self.chunk.emit(OpCode::SendMsg { src: r });
             }
             Stmt::Spawn(body) => {
-                let spawn_idx = self.chunk.emit(OpCode::SpawnActor { entry_offset: 0, end_offset: 0 });
+                let spawn_idx = self.chunk.emit(OpCode::SpawnActor {
+                    entry_offset: 0,
+                    end_offset: 0,
+                });
                 let jmp_over_idx = self.chunk.emit(OpCode::Jmp { offset: 0 });
-                
+
                 let actor_start = self.chunk.code.len();
                 self.compile_stmt(*body)?;
                 self.chunk.emit(OpCode::Halt);
                 let actor_end = self.chunk.code.len();
 
                 // Patch offsets
-                if let OpCode::SpawnActor { entry_offset, end_offset } = &mut self.chunk.code[spawn_idx] {
+                if let OpCode::SpawnActor {
+                    entry_offset,
+                    end_offset,
+                } = &mut self.chunk.code[spawn_idx]
+                {
                     *entry_offset = actor_start;
                     *end_offset = actor_end;
                 }
@@ -144,7 +166,10 @@ impl BytecodeCompiler {
             Stmt::While { cond, body } => {
                 let loop_start = self.chunk.code.len();
                 let r_cond = self.compile_expr(cond)?;
-                let jmp_false_idx = self.chunk.emit(OpCode::JmpIfFalse { cond: r_cond, offset: 0 });
+                let jmp_false_idx = self.chunk.emit(OpCode::JmpIfFalse {
+                    cond: r_cond,
+                    offset: 0,
+                });
 
                 self.compile_stmt(*body)?;
                 // Loop back to start
@@ -156,9 +181,16 @@ impl BytecodeCompiler {
             Stmt::CanvasDef { width, height, .. } => {
                 let rw = self.compile_expr(width)?;
                 let rh = self.compile_expr(height)?;
-                self.chunk.emit(OpCode::CanvasDef { width: rw, height: rh });
+                self.chunk.emit(OpCode::CanvasDef {
+                    width: rw,
+                    height: rh,
+                });
             }
-            Stmt::RenderPipeline { source, colormap, target_path } => {
+            Stmt::RenderPipeline {
+                source,
+                colormap,
+                target_path,
+            } => {
                 let r_src = self.compile_expr(source)?;
                 let path_str = match target_path {
                     Expr::Str(s) => s,
@@ -166,7 +198,11 @@ impl BytecodeCompiler {
                 };
                 let path_idx = self.chunk.add_string(path_str);
                 let cmap_idx = colormap.map(|c| self.chunk.add_string(c));
-                self.chunk.emit(OpCode::Render { src: r_src, path_idx, cmap_idx });
+                self.chunk.emit(OpCode::Render {
+                    src: r_src,
+                    path_idx,
+                    cmap_idx,
+                });
             }
             Stmt::Expr(expr) => {
                 let _ = self.compile_expr(expr)?;
@@ -192,41 +228,64 @@ impl BytecodeCompiler {
                 Ok(dst)
             }
             Expr::Call { name, args } => {
-                let &(func_ip, ref params) = self.func_map.get(&name)
+                let &(func_ip, ref params) = self
+                    .func_map
+                    .get(&name)
                     .ok_or_else(|| format!("LUM-FN06: Call to undefined function '{}'", name))?;
                 if args.len() != params.len() {
-                    return Err(format!("LUM-FN07: Function '{}' expects {} arguments, but got {}", name, params.len(), args.len()));
+                    return Err(format!(
+                        "LUM-FN07: Function '{}' expects {} arguments, but got {}",
+                        name,
+                        params.len(),
+                        args.len()
+                    ));
                 }
-                
+
                 let arg_count = args.len() as u8;
                 let arg_start = self.next_reg;
                 for arg in args {
                     let _ = self.compile_expr(arg)?;
                 }
                 let ret_dst = self.alloc_reg()?;
-                self.chunk.emit(OpCode::Call { func_ip, ret_dst, arg_start, arg_count });
+                self.chunk.emit(OpCode::Call {
+                    func_ip,
+                    ret_dst,
+                    arg_start,
+                    arg_count,
+                });
                 Ok(ret_dst)
             }
             Expr::Int(n) => {
                 let dst = self.alloc_reg()?;
                 let c_idx = self.chunk.add_constant(Value::Int(n));
-                self.chunk.emit(OpCode::LoadConst { dst, const_idx: c_idx });
+                self.chunk.emit(OpCode::LoadConst {
+                    dst,
+                    const_idx: c_idx,
+                });
                 Ok(dst)
             }
             Expr::Float(f) => {
                 let dst = self.alloc_reg()?;
                 let c_idx = self.chunk.add_constant(Value::Float(f));
-                self.chunk.emit(OpCode::LoadConst { dst, const_idx: c_idx });
+                self.chunk.emit(OpCode::LoadConst {
+                    dst,
+                    const_idx: c_idx,
+                });
                 Ok(dst)
             }
             Expr::Str(s) => {
                 let dst = self.alloc_reg()?;
                 let c_idx = self.chunk.add_constant(Value::Str(s));
-                self.chunk.emit(OpCode::LoadConst { dst, const_idx: c_idx });
+                self.chunk.emit(OpCode::LoadConst {
+                    dst,
+                    const_idx: c_idx,
+                });
                 Ok(dst)
             }
             Expr::Variable(name) => {
-                let &src = self.var_map.get(&name)
+                let &src = self
+                    .var_map
+                    .get(&name)
                     .ok_or_else(|| format!("LUM-VM03: Undefined variable '{}'", name))?;
                 let dst = self.alloc_reg()?;
                 self.chunk.emit(OpCode::Mov { dst, src });
@@ -245,11 +304,31 @@ impl BytecodeCompiler {
                     BinaryOp::Less => self.chunk.emit(OpCode::Less { dst, lhs, rhs }),
                     BinaryOp::Greater => self.chunk.emit(OpCode::Greater { dst, lhs, rhs }),
                     BinaryOp::LessEqual => self.chunk.emit(OpCode::LessEqual { dst, lhs, rhs }),
-                    BinaryOp::GreaterEqual => self.chunk.emit(OpCode::GreaterEqual { dst, lhs, rhs }),
+                    BinaryOp::GreaterEqual => {
+                        self.chunk.emit(OpCode::GreaterEqual { dst, lhs, rhs })
+                    }
                     _ => return Err("LUM-VM04: Operator not yet in bytecode ALU".into()),
                 };
                 Ok(dst)
             }
+            Expr::Array(elements) => {
+                let mut item_regs = Vec::with_capacity(elements.len());
+
+                for element in elements {
+                    let reg = self.compile_expr(element)?;
+                    item_regs.push(reg);
+                }
+
+                let dst = self.alloc_reg()?;
+
+                self.chunk.emit(OpCode::MakeArray {
+                    dst,
+                    items: item_regs,
+                });
+
+                Ok(dst)
+            }
+
             Expr::Intensity(inner) => {
                 let src = self.compile_expr(*inner)?;
                 let dst = self.alloc_reg()?;
@@ -260,10 +339,19 @@ impl BytecodeCompiler {
                 let r_steps = self.compile_expr(*steps)?;
                 let r_size = self.compile_expr(*size)?;
                 let dst = self.alloc_reg()?;
-                self.chunk.emit(OpCode::Fdtd2D { dst, steps: r_steps, size: r_size });
+                self.chunk.emit(OpCode::Fdtd2D {
+                    dst,
+                    steps: r_steps,
+                    size: r_size,
+                });
                 Ok(dst)
             }
-            Expr::Propagate2D { field, z, wavelength, dx } => {
+            Expr::Propagate2D {
+                field,
+                z,
+                wavelength,
+                dx,
+            } => {
                 let r_field = self.compile_expr(*field)?;
                 let r_z = self.compile_expr(*z)?;
                 let r_lambda = self.compile_expr(*wavelength)?;
@@ -281,13 +369,21 @@ impl BytecodeCompiler {
             Expr::Dft(inner) => {
                 let src = self.compile_expr(*inner)?;
                 let dst = self.alloc_reg()?;
-                self.chunk.emit(OpCode::Dft { dst, src, inverse: false });
+                self.chunk.emit(OpCode::Dft {
+                    dst,
+                    src,
+                    inverse: false,
+                });
                 Ok(dst)
             }
             Expr::Idft(inner) => {
                 let src = self.compile_expr(*inner)?;
                 let dst = self.alloc_reg()?;
-                self.chunk.emit(OpCode::Dft { dst, src, inverse: true });
+                self.chunk.emit(OpCode::Dft {
+                    dst,
+                    src,
+                    inverse: true,
+                });
                 Ok(dst)
             }
             _ => Err("LUM-VM05: Expression not yet supported in Bytecode compiler".into()),

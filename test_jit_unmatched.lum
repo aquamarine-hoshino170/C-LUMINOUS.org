@@ -1,0 +1,10 @@
+let counter = 1;
+let accumulator = 0;
+
+while counter <= 6 {
+    let junk = counter;
+    accumulator = accumulator + counter;
+    counter = counter + 1;
+}
+
+print(accumulator);
