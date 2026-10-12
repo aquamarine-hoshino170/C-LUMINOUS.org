@@ -1,0 +1,67 @@
+name: Gemini Code Agent
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  gemini-assist:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' || contains(github.event.comment.body, '@gemini-code')
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Gemini Code Agent
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_BODY: ${{ github.event.issue.body || github.event.comment.body }}
+          ISSUE_URL: ${{ github.event.issue.comments_url }}
+        run: |
+          python -c '
+          import os
+          import sys
+          import json
+          import urllib.request
+
+          api_key = os.environ.get("GEMINI_API_KEY")
+          github_token = os.environ.get("GITHUB_TOKEN")
+          issue_body = os.environ.get("ISSUE_BODY", "")
+          comments_url = os.environ.get("ISSUE_URL", "")
+
+          url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+          prompt = f"You are Gemini Code for the C-LUMINOUS.org repository. Task/Issue: {issue_body}\nProvide direct architectural guidance or code fixes in Rust/Luminous."
+          
+          data = {"contents": [{"parts": [{"text": prompt}]}]}
+          req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers={"Content-Type": "application/json"})
+          
+          try:
+              with urllib.request.urlopen(req) as resp:
+                  res = json.loads(resp.read().decode("utf-8"))
+                  reply_text = res["candidates"][0]["content"]["parts"][0]["text"]
+          except Exception as e:
+              reply_text = f"Gemini Execution Error: {e}"
+
+          comment_payload = {"body": f"### 🤖 Gemini Code Agent Response\n\n{reply_text}"}
+          gh_req = urllib.request.Request(
+              comments_url,
+              data=json.dumps(comment_payload).encode("utf-8"),
+              headers={
+                  "Authorization": f"Bearer {github_token}",
+                  "Accept": "application/vnd.github+json",
+                  "Content-Type": "application/json"
+              }
+          )
+          urllib.request.urlopen(gh_req)
+          '
