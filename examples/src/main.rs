@@ -3,7 +3,7 @@ use std::env;
 use std::fs;
 use std::sync::{mpsc, Arc, Mutex};
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum Value {
     Nil,
     Number(f64),

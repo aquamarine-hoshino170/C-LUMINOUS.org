@@ -24,7 +24,6 @@ pub fn predict_token(
     in_dim: u32,
     out_dim: u32,
 ) -> (u32, Vec<i8>, Vec<u32>) {
-    
     // Allocate zeroed memory for the assembly core to write into
     let mut logits = vec![0i8; out_dim as usize];
     let mut probs = vec![0u32; out_dim as usize];
