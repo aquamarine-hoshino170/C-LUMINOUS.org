@@ -78,6 +78,10 @@ def call(contents):
                                      headers={"Content-Type": "application/json", "x-goog-api-key": KEY})
         try:
             return json.load(urllib.request.urlopen(req, timeout=300))
+        except (ConnectionError, urllib.error.URLError, TimeoutError) as e:
+            if attempt < 3:
+                time.sleep(20 * (attempt + 1)); continue
+            print(f"NETWORK ERROR: {e}"); sys.exit(1)
         except urllib.error.HTTPError as e:
             err = e.read().decode()
             if e.code in (429, 500, 503) and attempt < 3:
