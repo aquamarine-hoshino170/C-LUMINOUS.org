@@ -20,6 +20,7 @@ pub struct LoopSpec {
     pub accum_reg: u8,
     pub limit: LimitSpec,
     pub step: StepSpec,
+    pub strict: bool,
 }
 
 pub struct LoopInspector;
@@ -54,39 +55,49 @@ impl LoopInspector {
             return None;
         }
 
-        let (counter_reg, limit_spec, loop_end_ip) = match (
-            &loop_slice[0],
-            &loop_slice[1],
-            &loop_slice[2],
-            &loop_slice[3],
-        ) {
-            (
-                OpCode::Mov {
-                    dst: r_temp,
-                    src: r_counter,
-                },
-                OpCode::LoadConst {
-                    dst: r_lim,
-                    const_idx,
-                },
-                OpCode::LessEqual {
-                    dst: r_cond,
-                    lhs,
-                    rhs,
-                },
-                OpCode::JmpIfFalse { cond, offset },
-            ) => {
-                if r_cond != cond || lhs != r_temp || rhs != r_lim {
-                    return None;
-                }
-                let limit_val = match chunk.constants.get(*const_idx) {
-                    Some(Value::Int(v)) => *v,
-                    _ => return None,
+        let strict = matches!(loop_slice[2], OpCode::Less { .. });
+        let lessified;
+        let op2: &OpCode = match &loop_slice[2] {
+            OpCode::Less { dst, lhs, rhs } => {
+                lessified = OpCode::LessEqual {
+                    dst: *dst,
+                    lhs: *lhs,
+                    rhs: *rhs,
                 };
-                (*r_counter, LimitSpec::Constant(limit_val), *offset)
+                &lessified
             }
-            _ => return None,
+            other => other,
         };
+
+        let (counter_reg, limit_spec, loop_end_ip) =
+            match (&loop_slice[0], &loop_slice[1], op2, &loop_slice[3]) {
+                (
+                    OpCode::Mov {
+                        dst: r_temp,
+                        src: r_counter,
+                    },
+                    OpCode::LoadConst {
+                        dst: r_lim,
+                        const_idx,
+                    },
+                    OpCode::LessEqual {
+                        dst: r_cond,
+                        lhs,
+                        rhs,
+                    },
+                    OpCode::JmpIfFalse { cond, offset },
+                ) => {
+                    if r_cond != cond || lhs != r_temp || rhs != r_lim {
+                        return None;
+                    }
+                    let limit_val = match chunk.constants.get(*const_idx) {
+                        Some(Value::Int(v)) => *v,
+                        _ => return None,
+                    };
+                    (*r_counter, LimitSpec::Constant(limit_val), *offset)
+                }
+                _ => return None,
+            };
 
         // ৩. বডি অ্যানালাইসিস: accumulator ও counter আপডেট
         let mut recognized_accum = None;
@@ -196,6 +207,7 @@ impl LoopInspector {
         let step = recognized_step?;
 
         Some(LoopSpec {
+            strict,
             loop_start_ip: loop_start,
             loop_end_ip,
             counter_reg,
@@ -316,7 +328,11 @@ impl DynamicJit {
 
         // bgt exit
         let bgt_idx = code.len();
-        code.push(0xCA00_0000);
+        code.push(if spec.strict {
+            0xAA00_0000
+        } else {
+            0xCA00_0000
+        });
 
         // ------------------------------------------------------------
         // 64-bit accumulator:
@@ -350,7 +366,12 @@ impl DynamicJit {
             return Err("Forward ARM branch offset out of range".into());
         }
 
-        code[bgt_idx] = 0xCA00_0000 | ((forward_offset as u32) & 0x00FF_FFFF);
+        let bcond: u32 = if spec.strict {
+            0xAA00_0000
+        } else {
+            0xCA00_0000
+        };
+        code[bgt_idx] = bcond | ((forward_offset as u32) & 0x00FF_FFFF);
 
         // ------------------------------------------------------------
         // Authoritative VM memory write-back

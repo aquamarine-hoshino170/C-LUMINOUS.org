@@ -4,6 +4,7 @@ use lum_rust::jit_emitter::{DynamicJit, LoopSpec};
 fn test_dynamic_register_isolation() {
     // Dynamic Case: Counter in reg[7], Accumulator in reg[15]
     let spec = LoopSpec {
+        strict: false,
         counter_reg: 7,
         limit_reg: 12,
         accumulator_reg: 15,
