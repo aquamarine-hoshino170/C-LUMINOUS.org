@@ -32,4 +32,4 @@ jobs:
         run: cargo build --release --verbose
 
       - name: Execute Full Scientific Test Suite
-        run: ./run_all_tests.sh
+        run: cargo test --lib --bins
