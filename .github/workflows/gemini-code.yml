@@ -2,8 +2,6 @@ name: Luminous Cloud Native Gemini 3.1 Pro Agent
 
 on:
   workflow_dispatch:
-  issues:
-    types: [opened]
   push:
     branches: [main]
 
@@ -12,126 +10,108 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
       issues: write
 
     steps:
-      - name: Checkout Luminous Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Python Runtime
+      - name: Setup Python
         uses: setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install Cloud-Native AI Tooling
+      - name: Install Google GenAI Library
         run: |
           pip install --upgrade pip
-          pip install google-genai PyGithub
+          pip install google-genai
 
       - name: Run Gemini 3.1 Pro Systems Audit
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_NAME: ${{ github.repository }}
         run: |
           python - << 'PYEOF'
           import os
           import sys
           import glob
           import json
-          from google import genai
-          from github import Github
 
           gemini_key = os.environ.get("GEMINI_API_KEY")
-          gh_token = os.environ.get("GITHUB_TOKEN")
-          repo_name = os.environ.get("REPO_NAME")
-
           if not gemini_key:
-              print("[Cloud Agent] GEMINI_API_KEY অনুপস্থিত! Secrets চেক করো।")
+              print("[Cloud Agent] GEMINI_API_KEY secret not found; skipping API pass safely.")
               sys.exit(0)
 
-          ai_client = genai.Client(api_key=gemini_key)
-          gh = Github(gh_token)
+          try:
+              from google import genai
+              ai_client = genai.Client(api_key=gemini_key)
+          except Exception as e:
+              print(f"[Cloud Agent Setup Notice]: {e}")
+              sys.exit(0)
 
-          # সোর্স কোড ও Chloe টেস্ট ফাইল রিড করা
+          # সোর্স কোড সংগ্রহ
           files_to_read = glob.glob("src/**/*.rs", recursive=True) + glob.glob("*.lum")
           context_map = {}
-          for f_path in files_to_read[:10]:
+          for f_path in files_to_read[:8]:
               try:
                   with open(f_path, "r", encoding="utf-8", errors="ignore") as f:
                       context_map[f_path] = f.read()
-              except Exception as err:
-                  print(f"Skipping {f_path}: {err}")
+              except Exception:
+                  pass
 
           if not context_map:
-              print("[Cloud Agent] কোনো সোর্স ফাইল পাওয়া যায়নি।")
+              print("[Cloud Agent] No target source files found.")
               sys.exit(0)
 
           system_prompt = """
-          You are the Principal Systems Architect powered by Gemini 3.1 Pro.
-          Domain: Luminous Programming Language (Register-based SVM, JIT Emitter, Chloe Data Protocol).
-          
-          Directives:
-          1. Detect register collisions in compiler.rs and bytecode instruction execution boundaries.
-          2. Strengthen string memory handling and optimize performance.
-          3. Ensure Chloe protocol operations are zero-overhead and properly typed.
-          
-          Respond strictly in valid JSON format:
+          You are Principal Systems Architect for Luminous Programming Language (SVM, ARM SIMD, Chloe Protocol).
+          Review the codebase, optimize register allocation, memory layout, and compiler robustness.
+          Output strictly in plain JSON format:
           [
             {"path": "src/path/to/file.rs", "content": "NEW_REFACTORED_CONTENT"}
           ]
-          Do NOT include markdown formatting or backticks. Plain JSON only.
+          No backticks, plain JSON only.
           """
 
-          prompt = f"{system_prompt}\n\nCURRENT SOURCE CODE:\n{json.dumps(context_map)}"
+          prompt = f"{system_prompt}\n\nCURRENT SOURCE FILES:\n{json.dumps(context_map)}"
+          models = ["gemini-3.1-pro", "gemini-2.5-pro", "gemini-2.5-flash"]
 
-          # Gemini 3.1 Pro টার্গেট মডেল
-          target_models = ["gemini-3.1-pro", "gemini-3-pro", "gemini-2.5-pro"]
-          refactored = False
-
-          for model_id in target_models:
+          for model_id in models:
               try:
-                  print(f"[Cloud Agent] Running advanced reasoning audit via {model_id}...")
+                  print(f"[Cloud Agent] Executing deep audit with {model_id}...")
                   response = ai_client.models.generate_content(
                       model=model_id,
-                      contents=prompt,
+                      contents=prompt
                   )
-                  raw_text = response.text.strip()
-                  if raw_text.startswith("```"):
-                      raw_text = raw_text.split("\n", 1)[1].rsplit("\n", 1)[0]
-
-                  file_updates = json.loads(raw_text)
-                  for file_obj in file_updates:
-                      path = file_obj.get("path")
-                      content = file_obj.get("content")
-                      if path and content:
-                          os.makedirs(os.path.dirname(path), exist_ok=True)
-                          with open(path, "w", encoding="utf-8") as out:
-                              out.write(content)
-                          print(f"[Patched by {model_id}]: {path}")
-                  refactored = True
+                  raw = response.text.strip()
+                  if raw.startswith("```"):
+                      raw = raw.split("\n", 1)[1].rsplit("\n", 1)[0]
+                  updates = json.loads(raw)
+                  for item in updates:
+                      p = item.get("path")
+                      c = item.get("content")
+                      if p and c:
+                          os.makedirs(os.path.dirname(p), exist_ok=True)
+                          with open(p, "w", encoding="utf-8") as out:
+                              out.write(c)
+                          print(f"[Audit Patched]: {p}")
+                  print("[Cloud Agent] Audit and patch pass completed successfully.")
                   break
-              except Exception as e:
-                  print(f"[Notice] Model {model_id} step note: {e}")
-
-          if refactored:
-              print("[Cloud Agent] Deep logic audit successfully executed.")
-          else:
-              print("[Cloud Agent] Codebase inspected cleanly.")
+              except Exception as err:
+                  print(f"[Notice] Model {model_id} step note: {err}")
           PYEOF
 
-      - name: Create Pull Request on Changes
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "feat: autonomous deep refactor via Gemini 3.1 Pro"
-          title: "🤖 Gemini 3.1 Pro: Autonomous System Audit & Refactoring"
-          body: |
-            ### Luminous Autonomous Deep Audit
-            - Engine: **Gemini 3.1 Pro (Advanced Reasoning)**
-            - Target: Low-level VM register mapping, Chloe serialization, and zero-allocation Rust runtime.
-          branch: "gemini-3-1-pro-audit"
-          delete-branch: true
+      - name: Commit and Push Hardened Branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git checkout -b gemini-3-1-pro-audit || git checkout gemini-3-1-pro-audit
+            git add -A
+            git commit -m "feat(audit): hardened VM logic via Gemini 3.1 Pro"
+            git push origin gemini-3-1-pro-audit --force
+            echo "Successfully pushed refactored code to branch: gemini-3-1-pro-audit"
+          else
+            echo "Clean audit: No immediate modifications required."
+          fi
