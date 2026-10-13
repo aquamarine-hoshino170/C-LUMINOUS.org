@@ -41,7 +41,7 @@ jobs:
                   sys.exit(0)
 
               # সবচেয়ে স্টেবল মডেল ব্যবহার করা হচ্ছে
-              url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={api_key}"
+              url = f"https://generativelanguage.googleapis.com/v1beta/models/NEW_MODEL:gemini-3.1-progenerateContent?key={api_key}"
 
               # Rust ফাইল পড়া
               rust_files = glob.glob("src/**/*.rs", recursive=True)
