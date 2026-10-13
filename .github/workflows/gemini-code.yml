@@ -2,92 +2,52 @@ name: Ultimate Gemini Agent
 
 on:
   workflow_dispatch:
-  issues:
-    types: [opened]
+    inputs:
+      task:
+        description: "Agent-এর কাজ"
+        required: true
+      model:
+        description: "Gemini model"
+        default: "gemini-2.5-pro"
   issue_comment:
     types: [created]
 
-jobs:
-  autonomous-agent:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      issues: write
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+permissions:
+  contents: write
+  pull-requests: write
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+jobs:
+  agent:
+    if: github.event_name == 'workflow_dispatch' || (github.event.comment.user.login == github.repository_owner && startsWith(github.event.comment.body, '/agent '))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Run Ultimate Gemini Logic
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - name: Run agent
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          MODEL: ${{ inputs.model || 'gemini-2.5-pro' }}
+          TASK: ${{ inputs.task || github.event.comment.body }}
+        run: python .github/agent/agent.py
+      - name: Open PR
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python -c '
-          import os
-          import sys
-          import glob
-          import json
-          import urllib.request
-
-          try:
-              api_key = os.environ.get("GEMINI_API_KEY")
-              if not api_key:
-                  print("Notice: GEMINI_API_KEY missing from secrets!")
-                  sys.exit(0)
-
-              # সবচেয়ে স্টেবল মডেল ব্যবহার করা হচ্ছে
-              url = f"https://generativelanguage.googleapis.com/v1beta/models/NEW_MODEL:gemini-3.1-progenerateContent?key={api_key}"
-
-              # Rust ফাইল পড়া
-              rust_files = glob.glob("src/**/*.rs", recursive=True)
-              context_data = ""
-              for f_path in rust_files[:3]:
-                  try:
-                      with open(f_path, "r", encoding="utf-8") as f:
-                          context_data += f"\n--- {f_path} ---\n{f.read()}\n"
-                  except Exception:
-                      pass
-
-              if not context_data:
-                  print("Notice: No Rust files found in src/ to analyze.")
-                  sys.exit(0)
-
-              prompt = (
-                  "You are the Ultimate Gemini Code Agent. "
-                  "Analyze this Luminous VM Rust codebase and provide optimized, hardened rewrites.\n"
-                  f"{context_data}"
-              )
-
-              request_body = {
-                  "contents": [{"parts": [{"text": prompt}]}],
-                  "generationConfig": {"temperature": 0.2}
-              }
-
-              req = urllib.request.Request(
-                  url,
-                  data=json.dumps(request_body).encode("utf-8"),
-                  headers={"Content-Type": "application/json"}
-              )
-
-              print("Initiating deep logic scan via Gemini API...")
-              with urllib.request.urlopen(req) as resp:
-                  res = json.loads(resp.read().decode("utf-8"))
-                  reply_text = res["candidates"][0]["content"]["parts"][0]["text"]
-                  print("\n=== GEMINI AUDIT RESULT ===\n")
-                  print(reply_text)
-                  print("\n===========================\n")
-
-          except urllib.error.HTTPError as he:
-              print(f"API Error (HTTP {he.code}): {he.read().decode()}")
-          except Exception as e:
-              print(f"Execution Error: {e}")
-          finally:
-              # যাই হোক না কেন, গিটহাব অ্যাকশন যেন সবুজ টিক দেখায়
-              print("Agent finished safe execution.")
-              sys.exit(0)
-          '
+          if [ -z "$(git status --porcelain)" ]; then echo "no changes"; exit 0; fi
+          B="agent/run-${{ github.run_id }}"
+          git config user.name "gemini-agent"
+          git config user.email "gemini-agent@users.noreply.github.com"
+          git checkout -b "$B"
+          git add -A
+          git commit -m "agent: automated changes (run ${{ github.run_id }})"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$B"
+          gh pr create --base main --head "$B" --title "Gemini agent: run ${{ github.run_id }}" --body-file /tmp/agent_summary.md || echo "PR তৈরি হয়নি, Settings চেক করুন"
