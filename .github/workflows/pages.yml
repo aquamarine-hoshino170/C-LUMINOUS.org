@@ -1,6 +1,0 @@
-      - name: Debug workspace
-        run: |
-          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
-          pwd
-          ls -la
-          if [ -d docs ]; then echo "docs exists"; ls -la docs; else echo "no docs dir"; fi
