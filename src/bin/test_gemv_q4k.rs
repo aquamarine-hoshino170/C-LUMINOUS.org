@@ -1,3 +1,8 @@
+#![allow(
+    clippy::needless_range_loop,
+    clippy::upper_case_acronyms,
+    clippy::len_without_is_empty
+)]
 #[inline(always)]
 fn fp16_to_fp32(h: u16) -> f32 {
     let sign = ((h >> 15) & 0x0001) as u32;

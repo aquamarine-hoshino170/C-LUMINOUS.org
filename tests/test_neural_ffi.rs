@@ -1,3 +1,4 @@
+#![cfg(target_arch = "arm")]
 use lum_rust::neural_ffi::predict_token;
 
 #[test]

@@ -287,7 +287,7 @@ fn execute_langevin_diffusion(
         let in_hair = ny < -0.22 && d < (0.85 + hair_frequency * 0.28);
 
         // Target 2: Headband Plate
-        let in_plate = ny >= -0.32 && ny <= -0.18 && nx.abs() <= 0.40;
+        let in_plate = (-0.32..=-0.18).contains(&ny) && nx.abs() <= 0.40;
 
         // Target 3: Anime Jaw & Face
         let jaw_bound = (0.35 - (ny + 0.1).max(0.0) * 0.65).max(0.0);
@@ -399,7 +399,7 @@ fn execute_langevin_diffusion(
     // 5. Final PNG Conversion
     println!("[4/4] Finalizing Clean PNG Artifact...");
     let _ = std::process::Command::new("magick")
-        .args(&[&ppm_temp, output_path])
+        .args([&ppm_temp, output_path])
         .status();
 
     let _ = fs::remove_file(&ppm_temp);

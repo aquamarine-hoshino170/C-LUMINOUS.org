@@ -243,16 +243,14 @@ impl DynamicJit {
             }
         };
 
-        let step_val = match spec.step {
-            StepSpec::Constant(v) => v,
-        };
+        let StepSpec::Constant(step_val) = spec.step;
 
         // Current native loop supports positive unit/integer steps.
         if step_val <= 0 {
             return Err("Native ARMv7 loop currently requires step > 0".into());
         }
 
-        if limit_val < 0 || limit_val > 0x7FFF_FFFF {
+        if !(0..=0x7FFF_FFFF).contains(&limit_val) {
             return Err("Limit exceeds supported positive 31-bit range".into());
         }
 

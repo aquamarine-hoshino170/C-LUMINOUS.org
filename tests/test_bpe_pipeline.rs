@@ -1,3 +1,4 @@
+#![cfg(target_arch = "arm")]
 use lum_rust::cxx_bridge::NeuralEngine;
 use lum_rust::tokenizer::ByteLevelBpeTokenizer;
 use std::time::Instant;

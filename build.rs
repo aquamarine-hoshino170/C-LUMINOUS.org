@@ -1,6 +1,6 @@
 use std::{env, fs, process::Command};
 
-fn main() {
+fn build_neon() {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
     let out_dir = std::env::var("OUT_DIR").unwrap();
 
@@ -191,4 +191,14 @@ fn main() {
     println!("cargo:rustc-link-lib=static=luminous_q4k_neon");
 
     println!("cargo:rerun-if-changed={}", q4k_src.display());
+}
+
+fn main() {
+    println!("cargo:rerun-if-changed=build.rs");
+    let arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_default();
+    if arch == "arm" {
+        build_neon();
+    } else {
+        println!("cargo:warning=skipping ARMv7 NEON kernels on {arch}");
+    }
 }

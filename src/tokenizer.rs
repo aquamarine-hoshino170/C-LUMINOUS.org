@@ -79,3 +79,9 @@ impl ByteLevelBpeTokenizer {
         String::from_utf8_lossy(&bytes).to_string()
     }
 }
+
+impl Default for ByteLevelBpeTokenizer {
+    fn default() -> Self {
+        Self::new()
+    }
+}

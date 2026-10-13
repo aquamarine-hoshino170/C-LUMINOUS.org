@@ -1,3 +1,8 @@
+#![allow(
+    clippy::needless_range_loop,
+    clippy::upper_case_acronyms,
+    clippy::len_without_is_empty
+)]
 mod ast;
 mod bytecode;
 mod compiler;

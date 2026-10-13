@@ -213,7 +213,7 @@ pub fn tokenize(input: &str) -> Vec<Token> {
                 let mut num_str = String::new();
                 let mut is_float = false;
                 while let Some(&ch) = chars.peek() {
-                    if ch.is_digit(10) {
+                    if ch.is_ascii_digit() {
                         num_str.push(ch);
                         chars.next();
                     } else if ch == '.' && !is_float {

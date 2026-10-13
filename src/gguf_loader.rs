@@ -333,7 +333,7 @@ impl GgufModel {
             }
 
             // 4-byte values
-            4 | 5 | 6 => {
+            4..=6 => {
                 cursor.seek(SeekFrom::Current(4))?;
             }
 
@@ -380,7 +380,7 @@ impl GgufModel {
                     }
 
                     // 4-byte array elements
-                    4 | 5 | 6 => {
+                    4..=6 => {
                         let bytes = arr_len.checked_mul(4).ok_or("GGUF array size overflow")?;
 
                         cursor.seek(SeekFrom::Current(bytes as i64))?;
@@ -407,7 +407,7 @@ impl GgufModel {
                     }
 
                     // UINT64 / INT64 / FLOAT64
-                    10 | 11 | 12 => {
+                    10..=12 => {
                         let bytes = arr_len.checked_mul(8).ok_or("GGUF array size overflow")?;
 
                         cursor.seek(SeekFrom::Current(bytes as i64))?;
@@ -420,7 +420,7 @@ impl GgufModel {
             }
 
             // 8-byte values
-            10 | 11 | 12 => {
+            10..=12 => {
                 cursor.seek(SeekFrom::Current(8))?;
             }
 

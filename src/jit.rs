@@ -8,7 +8,7 @@ pub struct ExecutableBuffer {
 impl ExecutableBuffer {
     pub fn new(code: &[u8]) -> Result<Self, String> {
         let page_size = unsafe { libc::sysconf(libc::_SC_PAGESIZE) as usize };
-        let alloc_size = ((code.len() + page_size - 1) / page_size) * page_size;
+        let alloc_size = code.len().div_ceil(page_size) * page_size;
 
         unsafe {
             // ১. Read + Write পারমিশনে মেমোরি পেজ অ্যালোকেট

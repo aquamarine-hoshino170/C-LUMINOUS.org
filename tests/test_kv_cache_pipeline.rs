@@ -1,3 +1,4 @@
+#![cfg(target_arch = "arm")]
 use lum_rust::cxx_bridge::KVCache;
 use std::time::Instant;
 

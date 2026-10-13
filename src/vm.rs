@@ -196,20 +196,17 @@ impl SVM {
             }
             OpCode::Jmp { offset } => {
                 // Backward Jump Detection for Native JIT
-                if *offset <= current_ip {
-                    if self.profiler.record_jump(*offset) {
-                        println!(
-                            "[SVM Hot-Spot Profiler] Hot Loop Detected at target IP {:04}!",
-                            *offset
-                        );
-                        if let Some(spec) =
-                            crate::jit_emitter::LoopInspector::inspect(chunk, *offset, current_ip)
-                        {
-                            println!("  ├── [Loop Inspector] Pattern Matched: {:?}", spec);
-                            println!(
-                                "  ├── [JIT Compiler] Compiling Dynamic ARMv7 Machine Code..."
-                            );
-                            match crate::jit_emitter::DynamicJit::compile_loop(&spec) {
+                if *offset <= current_ip && self.profiler.record_jump(*offset) {
+                    println!(
+                        "[SVM Hot-Spot Profiler] Hot Loop Detected at target IP {:04}!",
+                        *offset
+                    );
+                    if let Some(spec) =
+                        crate::jit_emitter::LoopInspector::inspect(chunk, *offset, current_ip)
+                    {
+                        println!("  ├── [Loop Inspector] Pattern Matched: {:?}", spec);
+                        println!("  ├── [JIT Compiler] Compiling Dynamic ARMv7 Machine Code...");
+                        match crate::jit_emitter::DynamicJit::compile_loop(&spec) {
                                 Ok(exec_buf) => {
                                     println!("  ├── [Executable Memory] Allocated at {:p} (PROT_READ | PROT_EXEC)", exec_buf.ptr);
                                     let mut raw_regs: [i64; 32] = [0; 32];
@@ -239,9 +236,8 @@ impl SVM {
                                 }
                                 Err(e) => eprintln!("  └── [JIT Fallback] Compilation failed: {}. Continuing interpreter.", e),
                             }
-                        } else {
-                            println!("  └── [JIT Fallback] Loop pattern unsupported or non-trivial. Running interpreter.");
-                        }
+                    } else {
+                        println!("  └── [JIT Fallback] Loop pattern unsupported or non-trivial. Running interpreter.");
                     }
                 }
                 self.ip = *offset;
